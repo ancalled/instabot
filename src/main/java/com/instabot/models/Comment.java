@@ -1,64 +1,70 @@
 package com.instabot.models;
 
+import com.instabot.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Date;
+
 public class Comment {
 
-    String createdTimestamp;
-    String text;
-    User sender;
-    String id;
+    private String id;
+    private String postId;
+    private String text;
+    private User sender;
+    private Date whenCreated;
 
-    public Comment(JSONObject obj) throws JSONException {
-        setCreatedTimestamp(obj.getString("created_time"));
-        setText(obj.getString("text"));
+    public Comment(){}
+
+    public Comment(JSONObject obj, String postId) throws JSONException {
         setId(obj.getString("id"));
+        setText(obj.getString("text"));
         setSender((new User(obj.getJSONObject("from"))));
-    }
-
-    public String getCreatedTimestamp() {
-        return createdTimestamp;
-    }
-
-    protected void setCreatedTimestamp(String createdTimestamp) {
-        this.createdTimestamp = createdTimestamp;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    protected void setText(String text) {
-        this.text = text;
+        setWhenCreated(Utils.timestampToDate(obj.getString("created_time")));
+        setPostId(postId);
     }
 
     public String getId() {
         return id;
     }
 
-    protected void setId(String id) {
+    public void setId(String id) {
         this.id = id;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 
     public User getSender() {
         return sender;
     }
 
-    protected void setSender(User sender) {
+    public void setSender(User sender) {
         this.sender = sender;
     }
 
-    /**
-     * Checks if two comment objects are equal
-     *
-     * @param o The object to be compared
-     * @return True of the two objects are equal, false otherwise
-     */
+    public Date getWhenCreated() {
+        return whenCreated;
+    }
+
+    public void setWhenCreated(Date whenCreated) {
+        this.whenCreated = whenCreated;
+    }
+
     public boolean equals(Object o) {
-        if (o == null) return false;
-        if (o == this) return true;
-        if (o.getClass() != this.getClass()) return false;
-        return ((Comment) o).getId().equals(getId());
+        return o != null && (o == this || o.getClass() == this.getClass() && ((Comment) o).getId().equals(getId()));
+    }
+
+    public String getPostId() {
+        return postId;
+    }
+
+    public void setPostId(String postId) {
+        this.postId = postId;
     }
 }

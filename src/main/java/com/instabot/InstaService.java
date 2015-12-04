@@ -1,7 +1,7 @@
 package com.instabot;
 
 import com.instabot.models.Comment;
-import com.instabot.models.Media;
+import com.instabot.models.Post;
 import com.instabot.models.Tag;
 import com.instabot.models.User;
 import org.json.JSONArray;
@@ -13,7 +13,7 @@ import java.util.List;
 
 import static com.instabot.RequestHelper.*;
 
-public class MainService {
+public class InstaService {
 
     public List<User> searchUsersByName(String name) {
         String url = getUrl(Endpoints.Users.SEARCH_USER_BY_NAME, null) + "&q=" + name;
@@ -61,25 +61,25 @@ public class MainService {
         return users;
     }
 
-    public List<Media> getRecentUserMedias(String userId) {
+    public List<Post> getRecentUserMedias(String userId) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("user_id", userId);
         String url = getUrl(Endpoints.Users.GET_RECENT_MEDIA, map);
         JSONArray objects = makeRequestJson(url).getJSONArray("data");
 
-        List<Media> medias = new ArrayList<>();
+        List<Post> posts = new ArrayList<>();
         for (int i = 0; i < objects.length(); i++) {
-            medias.add(new Media(objects.getJSONObject(i)));
+            posts.add(new Post(objects.getJSONObject(i)));
         }
-        return medias;
+        return posts;
     }
 
-    public Media getMedia(String mediaId) {
+    public Post getMedia(String mediaId) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("media_id", mediaId);
         String url = getUrl(Endpoints.Media.GET_MEDIA, map);
         JSONObject object = makeRequestJson(url);
-        return Media.fromJSON(object.getJSONObject("data"));
+        return new Post(object.getJSONObject("data"));
     }
 
     public List<Comment> getMediaComments(String mediaId) {
@@ -89,7 +89,7 @@ public class MainService {
         JSONArray commentObjects = makeRequestJson(url).getJSONArray("data");
         ArrayList<Comment> comments = new ArrayList<>();
         for (int i = 0; i < commentObjects.length(); i++) {
-            comments.add(new Comment(commentObjects.getJSONObject(i)));
+            comments.add(new Comment(commentObjects.getJSONObject(i), mediaId));
         }
         return comments;
     }
@@ -103,7 +103,7 @@ public class MainService {
         params.put("text", text);
         params.put("access_token", AccessTokenHelper.getAccessToken());
         JSONObject object = makeRequestJson(url, params);
-        return new Comment(object.getJSONObject("data"));
+        return new Comment(object.getJSONObject("data"), mediaId);
     }
 
     public Tag getTag(String tagName) {
@@ -114,7 +114,7 @@ public class MainService {
         return new Tag(object.getJSONObject("data"));
     }
 
-    public List<Media> getRecentTaggedMedia(String tagName) {
+    public List<Post> getRecentTaggedMedia(String tagName) {
         tagName = tagName.replaceAll("^#*", "");
         HashMap<String, Object> map = new HashMap<>();
         map.put("tag_name", tagName);
@@ -122,12 +122,12 @@ public class MainService {
         System.out.println(url);
         JSONArray objects = makeRequestJson(url).getJSONArray("data");
 
-        List<Media> medias = new ArrayList<>();
+        List<Post> posts = new ArrayList<>();
 
         for (int i = 0; i < objects.length(); i++) {
-            medias.add(new Media(objects.getJSONObject(i)));
+            posts.add(new Post(objects.getJSONObject(i)));
         }
-        return medias;
+        return posts;
     }
 
     public List<Tag> searchTags(String tagName) {

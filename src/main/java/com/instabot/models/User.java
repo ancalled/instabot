@@ -5,15 +5,15 @@ import org.json.JSONObject;
 
 public class User {
 
-    protected String id;
-    protected String userName;
-    protected String fullName;
-    protected String profilePictureURI;
-    protected String bio;
-    protected String website;
-    protected int mediaCount = -1;
-    protected int followerCount = -1;
-    protected int followingCount = -1;
+    private String id;
+    private String userName;
+    private String fullName;
+    private String profilePictureURI;
+    private String bio;
+    private String website;
+    private int mediaCount = -1;
+    private int followerCount = -1;
+    private int followingCount = -1;
 
     public User(JSONObject obj) throws JSONException {
 
@@ -41,7 +41,7 @@ public class User {
         return id;
     }
 
-    protected void setId(String id) {
+    private void setId(String id) {
         this.id = id;
     }
 
@@ -49,7 +49,7 @@ public class User {
         return userName;
     }
 
-    protected void setUserName(String userName) {
+    private void setUserName(String userName) {
         this.userName = userName;
     }
 
@@ -57,7 +57,7 @@ public class User {
         return fullName;
     }
 
-    protected void setFullName(String fullName) {
+    private void setFullName(String fullName) {
         this.fullName = fullName;
     }
 
@@ -65,7 +65,7 @@ public class User {
         return profilePictureURI;
     }
 
-    protected void setProfilePictureURI(String profilePictureURI) {
+    private void setProfilePictureURI(String profilePictureURI) {
         this.profilePictureURI = profilePictureURI;
     }
 
@@ -73,7 +73,7 @@ public class User {
         return bio;
     }
 
-    protected void setBio(String bio) throws JSONException {
+    private void setBio(String bio) throws JSONException {
         this.bio = bio;
     }
 
@@ -81,7 +81,7 @@ public class User {
         return website;
     }
 
-    protected void setWebsite(String website) {
+    private void setWebsite(String website) {
         this.website = website;
     }
 
@@ -89,7 +89,7 @@ public class User {
         return mediaCount;
     }
 
-    protected void setMediaCount(int mediaCount) {
+    private void setMediaCount(int mediaCount) {
         this.mediaCount = mediaCount;
     }
 
@@ -97,7 +97,7 @@ public class User {
         return followerCount;
     }
 
-    protected void setFollowerCount(int followerCount) {
+    private void setFollowerCount(int followerCount) {
         this.followerCount = followerCount;
     }
 
@@ -105,7 +105,7 @@ public class User {
         return followingCount;
     }
 
-    protected void setFollowingCount(int followingCount) {
+    private void setFollowingCount(int followingCount) {
         this.followingCount = followingCount;
     }
 

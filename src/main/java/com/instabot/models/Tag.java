@@ -29,12 +29,6 @@ public class Tag {
         return name;
     }
 
-    /**
-     * Checks if two tags objects are equal
-     *
-     * @param o The object to be compared
-     * @return True of the two objects are equal, false otherwise
-     */
     public boolean equals(Object o) {
         return o != null && (o == this || o.getClass() == this.getClass() && ((Tag) o).getName().equals(getName()));
     }
