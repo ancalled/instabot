@@ -17,6 +17,13 @@
             <artifactId>json</artifactId>
             <version>20151123</version>
         </dependency>
+
+        <!--logging-->
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
     </dependencies>
 
     <build>
