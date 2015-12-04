@@ -16,8 +16,8 @@ import static com.instabot.RequestHelper.*;
 public class MainService {
 
     public List<User> searchUsersByName(String name) {
-        String uri = getUrl(Endpoints.Users.SEARCH_USER_BY_NAME, null) + "&q=" + name;
-        JSONArray objects = makeRequestJson(uri).getJSONArray("data");
+        String url = getUrl(Endpoints.Users.SEARCH_USER_BY_NAME, null) + "&q=" + name;
+        JSONArray objects = makeRequestJson(url).getJSONArray("data");
 
         List<User> users = new ArrayList<>();
         for (int i = 0; i < objects.length(); i++) {
@@ -29,18 +29,17 @@ public class MainService {
     public User getUserById(String userId) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("user_id", userId);
-        String uri = getUrl(Endpoints.Users.GET_DATA, map);
-        JSONObject userObject = makeRequestJson(uri);
+        String url = getUrl(Endpoints.Users.GET_DATA, map);
+        JSONObject userObject = makeRequestJson(url);
         return userObject != null ? new User(userObject.getJSONObject("data")) : null;
     }
 
-
     public List<User> getFollows(String userId) {
 
-        HashMap<String, Object> map = new HashMap<String, Object>();
+        HashMap<String, Object> map = new HashMap<>();
         map.put("user_id", userId);
-        String uri = getUrl(Endpoints.Relationships.GET_FOLLOWS, map);
-        JSONArray objects = makeRequestJson(uri).getJSONArray("data");
+        String url = getUrl(Endpoints.Relationships.GET_FOLLOWS, map);
+        JSONArray objects = makeRequestJson(url).getJSONArray("data");
 
         List<User> users = new ArrayList<>();
         for (int i = 0; i < objects.length(); i++) {
@@ -52,8 +51,8 @@ public class MainService {
     public List<User> getFollowers(String userId) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("user_id", userId);
-        String uri = getUrl(Endpoints.Relationships.GET_FOLLOWERS, map);
-        JSONArray objects = makeRequestJson(uri).getJSONArray("data");
+        String url = getUrl(Endpoints.Relationships.GET_FOLLOWERS, map);
+        JSONArray objects = makeRequestJson(url).getJSONArray("data");
 
         List<User> users = new ArrayList<>();
         for (int i = 0; i < objects.length(); i++) {
@@ -65,8 +64,8 @@ public class MainService {
     public List<Media> getRecentUserMedias(String userId) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("user_id", userId);
-        String uri = getUrl(Endpoints.Users.GET_RECENT_MEDIA, map);
-        JSONArray objects = makeRequestJson(uri).getJSONArray("data");
+        String url = getUrl(Endpoints.Users.GET_RECENT_MEDIA, map);
+        JSONArray objects = makeRequestJson(url).getJSONArray("data");
 
         List<Media> medias = new ArrayList<>();
         for (int i = 0; i < objects.length(); i++) {
@@ -78,8 +77,8 @@ public class MainService {
     public Media getMedia(String mediaId) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("media_id", mediaId);
-        String uri = getUrl(Endpoints.Media.GET_MEDIA, map);
-        JSONObject object = makeRequestJson(uri);
+        String url = getUrl(Endpoints.Media.GET_MEDIA, map);
+        JSONObject object = makeRequestJson(url);
         return Media.fromJSON(object.getJSONObject("data"));
     }
 
@@ -108,19 +107,20 @@ public class MainService {
     }
 
     public Tag getTag(String tagName) {
-        HashMap<String, Object> map = new HashMap<String, Object>();
+        HashMap<String, Object> map = new HashMap<>();
         map.put("tag_name", tagName);
         String url = getUrl(Endpoints.Tags.GET_TAG, map);
         JSONObject object = makeRequestJson(url);
         return new Tag(object.getJSONObject("data"));
     }
 
-    public List<Media> getRecentMediaForTag(String tagName) {
+    public List<Media> getRecentTaggedMedia(String tagName) {
         tagName = tagName.replaceAll("^#*", "");
-        HashMap<String, Object> map = new HashMap<String, Object>();
+        HashMap<String, Object> map = new HashMap<>();
         map.put("tag_name", tagName);
-        String uri = getUrl(Endpoints.Tags.GET_RECENT_TAGED_MEDIA, map);
-        JSONArray objects = makeRequestJson(uri).getJSONArray("data");
+        String url = getUrl(Endpoints.Tags.GET_RECENT_TAGED_MEDIA, map);
+        System.out.println(url);
+        JSONArray objects = makeRequestJson(url).getJSONArray("data");
 
         List<Media> medias = new ArrayList<>();
 
@@ -128,5 +128,15 @@ public class MainService {
             medias.add(new Media(objects.getJSONObject(i)));
         }
         return medias;
+    }
+
+    public List<Tag> searchTags(String tagName) {
+        String url = getUrl(Endpoints.Tags.SEARCH_TAGS, null) + "&q=" + tagName;
+        JSONArray tagItems = makeRequestJson(url).getJSONArray("data");
+        ArrayList<Tag> tags = new ArrayList<>();
+        for (int i = 0; i < tagItems.length(); i++) {
+            tags.add(new Tag(tagItems.getJSONObject(i)));
+        }
+        return tags;
     }
 }
