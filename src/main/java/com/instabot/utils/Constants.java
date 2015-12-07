@@ -1,6 +1,12 @@
-package com.instabot;
+package com.instabot.utils;
 
-public class Endpoints {
+public class Constants {
+
+    public static final String SELL_TAG = "sell_viaphone";
+    public static final String BUY_TAG = "#buy_viaphone";
+    public static final String NAME_TAG = "name_";
+    public static final String PRICE_TAG = "price_";
+    public static final String QTY_TAG = "qty_";
 
     public static final String API_ROOT = "https://api.instagram.com/v1";
 

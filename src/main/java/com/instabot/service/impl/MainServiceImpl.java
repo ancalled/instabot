@@ -1,14 +1,13 @@
 package com.instabot.service.impl;
 
-import com.instabot.models.Comment;
+import com.instabot.models.Order;
 import com.instabot.models.Post;
-import com.instabot.service.Connection;
 import com.instabot.service.MainService;
+import com.instabot.utils.DbHelper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import sun.misc.PostVMInitHook;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
@@ -23,7 +22,7 @@ public class MainServiceImpl implements MainService {
     private JdbcTemplate db;
 
     public MainServiceImpl() {
-        DataSource dataSource = Connection.getDataSource();
+        DataSource dataSource = DbHelper.getDataSource();
         this.db = new JdbcTemplate(dataSource);
     }
 
@@ -35,21 +34,25 @@ public class MainServiceImpl implements MainService {
     @Override
     public Long createPost(Post post) {
 
-        String insert = "INSERT INTO POSTS (POST_ID, LINK, TYPE, USER_ID, WHENCREATED, CAPTION_ID, CAPTION_TEXT, " +
-                "CAPTION_WHENCREATED, STATUS) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String insert = "INSERT INTO POSTS (POST_ID, LINK, USER_ID, WHENCREATED, CAPTION_ID, CAPTION_TEXT, " +
+                "CAPTION_WHENCREATED, PRODUCT_NAME, PRICE, QTY, LEAVES_QTY, STATUS) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         db.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(insert, new String[]{"id"});
-            ps.setString(1, post.getId());
+            ps.setString(1, post.getPostId());
             ps.setString(2, post.getLink());
-            ps.setString(3, post.getType());
-            ps.setString(4, post.getUser().getId());
-            ps.setTimestamp(5, new Timestamp(post.getWhenCreated().getTime()));
-            ps.setString(6, post.getCaptionId());
-            ps.setString(7, post.getCaptionText());
-            ps.setTimestamp(8, new Timestamp(post.getCaptionWhenCreated().getTime()));
-            ps.setInt(9, Post.Status.ACTIVE.ordinal());
+            ps.setString(3, post.getUser().getId());
+            ps.setTimestamp(4, new Timestamp(post.getWhenCreated().getTime()));
+            ps.setString(5, post.getCaptionId());
+            ps.setString(6, post.getCaptionText());
+            ps.setTimestamp(7, new Timestamp(post.getCaptionWhenCreated().getTime()));
+            ps.setString(8, post.getProductName());
+            ps.setDouble(9, post.getPrice());
+            ps.setInt(10, post.getQty());
+            ps.setInt(11, post.getLeavesQty());
+            ps.setInt(12, Post.Status.ACTIVE.ordinal());
             return ps;
         }, keyHolder);
         return keyHolder.getKey().longValue();
@@ -62,43 +65,48 @@ public class MainServiceImpl implements MainService {
     }
 
     @Override
-    public Long createComment(Comment comment) {
-
-        String insert = "INSERT INTO COMMENTS (COMMENT_ID, POST_ID, TEXT, USER_ID, WHENCREATED) VALUES (?, ?, ?, ?, ?)";
+    public Long createOrder(Order order) {
+        String insert = "INSERT INTO ORDERS (COMMENT_ID, POST_ID, QTY, TEXT, USER_ID, WHENCREATED) VALUES (?, ?, ?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         db.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(insert, new String[]{"id"});
-            ps.setString(1, comment.getId());
-            ps.setString(2, comment.getPostId());
-            ps.setString(3, comment.getText());
-            ps.setString(4, comment.getSender().getId());
-            ps.setTimestamp(5, new Timestamp(comment.getWhenCreated().getTime()));
+            ps.setString(1, order.getCommentId());
+            ps.setString(2, order.getPostId());
+            ps.setInt(3, order.getQty());
+            ps.setString(4, order.getText());
+            ps.setString(5, order.getUser().getId());
+            ps.setTimestamp(6, new Timestamp(order.getWhenCreated().getTime()));
             return ps;
         }, keyHolder);
         return keyHolder.getKey().longValue();
     }
 
     @Override
-    public Comment getComment(String commentId) {
-        List<Comment> comments = db.query("SELECT * FROM COMMENTS WHERE COMMENT_ID=?", new CommentMapper(), commentId);
-        return comments != null && !comments.isEmpty() ? comments.get(0) : null;
+    public Order getOrderByCommentId(String commentId) {
+        List<Order> orders = db.query("SELECT * FROM ORDERS WHERE COMMENT_ID=?", new CommentMapper(), commentId);
+        return orders != null && !orders.isEmpty() ? orders.get(0) : null;
     }
 
     private static class PostMapper implements RowMapper {
         @Override
-        public Object mapRow(ResultSet resultSet, int i) throws SQLException {
+        public Object mapRow(ResultSet rs, int i) throws SQLException {
             Post post = new Post();
-            post.setId(resultSet.getString("POST_ID"));
-            post.setLink(resultSet.getString("LINK"));
-            post.setType(resultSet.getString("TYPE"));
+
+            post.setId(rs.getLong("ID"));
+            post.setPostId(rs.getString("POST_ID"));
+            post.setLink(rs.getString("LINK"));
             // TODO: 12/4/2015
-//            post.setUser(resultSet.getString("USER_ID"));
-            post.setWhenCreated(resultSet.getTimestamp("WHENCREATED"));
-            post.setCaptionId(resultSet.getString("CAPTION_ID"));
-            post.setCaptionText(resultSet.getString("CAPTION_TEXT"));
-            post.setCaptionWhenCreated(resultSet.getTimestamp("CAPTION_WHENCREATED"));
-            Integer status = resultSet.getInt("status");
+//            post.setUser(rs.getString("USER_ID"));
+            post.setWhenCreated(rs.getTimestamp("WHENCREATED"));
+            post.setCaptionId(rs.getString("CAPTION_ID"));
+            post.setCaptionText(rs.getString("CAPTION_TEXT"));
+            post.setCaptionWhenCreated(rs.getTimestamp("CAPTION_WHENCREATED"));
+            post.setProductName(rs.getString("PRODUCT_NAME"));
+            post.setPrice(rs.getDouble("PRICE"));
+            post.setQty(rs.getInt("QTY"));
+            post.setLeavesQty(rs.getInt("LEAVES_QTY"));
+            Integer status = rs.getInt("status");
             post.setStatus(Post.Status.values()[status]);
             return post;
         }
@@ -106,15 +114,17 @@ public class MainServiceImpl implements MainService {
 
     private static class CommentMapper implements RowMapper {
         @Override
-        public Object mapRow(ResultSet resultSet, int i) throws SQLException {
-            Comment comment = new Comment();
-            comment.setId(resultSet.getString("COMMENT_ID"));
-            comment.setPostId(resultSet.getString("POST_ID"));
-            comment.setText(resultSet.getString("TEXT"));
+        public Object mapRow(ResultSet rs, int i) throws SQLException {
+            Order order = new Order();
+            order.setId(rs.getLong("ID"));
+            order.setCommentId(rs.getString("COMMENT_ID"));
+            order.setPostId(rs.getString("POST_ID"));
+            order.setQty(rs.getInt("QTY"));
+            order.setText(rs.getString("TEXT"));
             // TODO: 12/4/2015
-//            comment.setUser(resultSet.getString("USER_ID"));
-            comment.setWhenCreated(resultSet.getTimestamp("WHENCREATED"));
-            return comment;
+//            comment.setUser(rs.getString("USER_ID"));
+            order.setWhenCreated(rs.getTimestamp("WHENCREATED"));
+            return order;
         }
     }
 }

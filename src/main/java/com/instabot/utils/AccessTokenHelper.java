@@ -1,4 +1,4 @@
-package com.instabot;
+package com.instabot.utils;
 
 
 import java.io.*;

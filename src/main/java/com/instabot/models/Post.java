@@ -4,34 +4,36 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.instabot.Utils;
+import com.instabot.utils.Utils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import static com.instabot.utils.Constants.*;
 
 public class Post {
 
-    private String id;
-    private String type;
+    private long id;
+    private String postId;
     private String link;
     private User user;
     private Date whenCreated;
     private String captionId;
     private String captionText;
     private Date captionWhenCreated;
-    private int likeCount;
+    private String productName;
+    private double price;
+    private int qty;
+    private int leavesQty;
     private int commentCount;
     private List<String> tags;
-    private List<Comment> comments;
-    private List<User> likers;
+    private List<Order> orders;
     private Status status;
 
     public Post() {}
 
     public Post(JSONObject obj) throws JSONException {
 
-        setId(obj.getString("id"));
-        setType(obj.getString("type"));
+        setPostId(obj.getString("id"));
         setLink(obj.optString("link"));
         setUser(new User(obj.getJSONObject("user")));
         setWhenCreated(Utils.timestampToDate(obj.getString("created_time")));
@@ -43,34 +45,51 @@ public class Post {
             setCaptionWhenCreated(Utils.timestampToDate(captionObj.getString("created_time")));
         }
 
-        JSONObject likes = obj.getJSONObject("likes");
-        setLikeCount(likes.getInt("count"));
-
         JSONObject comments = obj.getJSONObject("comments");
         setCommentCount(comments.getInt("count"));
 
         JSONArray tagStrings = obj.getJSONArray("tags");
         ArrayList<String> tags = new ArrayList<>();
         for (int i = 0; i < tagStrings.length(); i++) {
-            tags.add(tagStrings.getString(i));
+            String tagName = tagStrings.getString(i).toLowerCase();
+
+            if (tagName.contains(NAME_TAG)) {
+                String productName = tagName.replace(NAME_TAG, "");
+                setProductName(productName);
+            }
+
+            if (tagName.contains(PRICE_TAG)) {
+                String priceStr = tagName.replace(PRICE_TAG, "");
+                double price = !priceStr.equals("") ? Double.parseDouble(priceStr) : 0;
+                setPrice(price);
+            }
+
+            if (tagName.contains(QTY_TAG)) {
+                String qtyStr = tagName.replace(QTY_TAG, "");
+                int qty = !qtyStr.equals("") ? Integer.parseInt(qtyStr) : 1;
+                setQty(qty);
+                setLeavesQty(qty);
+            }
+
+            tags.add(tagName);
         }
         setTags(tags);
     }
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public String getType() {
-        return type;
+    public String getPostId() {
+        return postId;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setPostId(String postId) {
+        this.postId = postId;
     }
 
     public String getLink() {
@@ -121,12 +140,36 @@ public class Post {
         this.captionWhenCreated = captionWhenCreated;
     }
 
-    public int getLikeCount() {
-        return likeCount;
+    public String getProductName() {
+        return productName;
     }
 
-    public void setLikeCount(int likeCount) {
-        this.likeCount = likeCount;
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public int getQty() {
+        return qty;
+    }
+
+    public void setQty(int qty) {
+        this.qty = qty;
+    }
+
+    public int getLeavesQty() {
+        return leavesQty;
+    }
+
+    public void setLeavesQty(int leavesQty) {
+        this.leavesQty = leavesQty;
     }
 
     public int getCommentCount() {
@@ -145,24 +188,12 @@ public class Post {
         this.tags = tags;
     }
 
-    public List<Comment> getComments() {
-        return comments;
+    public List<Order> getOrders() {
+        return orders;
     }
 
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
-    }
-
-    public List<User> getLikers() {
-        return likers;
-    }
-
-    public void setLikers(List<User> likers) {
-        this.likers = likers;
-    }
-
-    public boolean equals(Object o) {
-        return o != null && (o == this || o.getClass() == this.getClass() && ((Post) o).getId().equals(getId()));
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
     }
 
     public Status getStatus() {
@@ -171,6 +202,10 @@ public class Post {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public boolean equals(Object o) {
+        return o != null && (o == this || o.getClass() == this.getClass() && ((Post) o).getPostId().equals(getPostId()));
     }
 
     public enum Status {

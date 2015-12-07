@@ -1,6 +1,6 @@
 package com.instabot.service;
 
-import com.instabot.models.Comment;
+import com.instabot.models.Order;
 import com.instabot.models.Post;
 
 public interface MainService {
@@ -9,7 +9,7 @@ public interface MainService {
 
     Post getPost(String postId);
 
-    Long createComment(Comment comment);
+    Long createOrder(Order order);
 
-    Comment getComment(String commentId);
+    Order getOrderByCommentId(String commentId);
 }

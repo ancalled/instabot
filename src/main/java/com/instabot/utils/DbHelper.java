@@ -1,4 +1,4 @@
-package com.instabot;
+package com.instabot.utils;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -6,24 +6,43 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
+import javax.sql.DataSource;
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RequestHelper {
+public class DbHelper {
+
+    private static final String driverClassName = "oracle.jdbc.OracleDriver";
+    private static final String url = "jdbc:oracle:thin:@//localhost:1521/xe";
+    private static final String username = "instabot";
+    private static final String password = "root";
+
+    public static void main(String[] args) throws Exception {
+        DataSource dataSource = getDataSource();
+        JdbcTemplate template = new JdbcTemplate();
+        template.setDataSource(dataSource);
+    }
+
+    public static DriverManagerDataSource getDataSource() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName(driverClassName);
+        dataSource.setUrl(url);
+        dataSource.setUsername(username);
+        dataSource.setPassword(password);
+        return dataSource;
+    }
 
     public static String getUrl(String uri, HashMap<String, Object> map) {
         try {
