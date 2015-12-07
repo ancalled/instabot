@@ -38,6 +38,9 @@ public class Post {
         setUser(new User(obj.getJSONObject("user")));
         setWhenCreated(Utils.timestampToDate(obj.getString("created_time")));
 
+        setQty(1);
+        setLeavesQty(1);
+
         if (!obj.isNull("caption")) {
             JSONObject captionObj = obj.getJSONObject("caption");
             setCaptionId(captionObj.getString("id"));
