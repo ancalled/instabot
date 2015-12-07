@@ -8,6 +8,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -23,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 
 public class DbHelper {
+
+    private static Logger log = Logger.getLogger(DbHelper.class);
 
     private static final String driverClassName = "oracle.jdbc.OracleDriver";
     private static final String url = "jdbc:oracle:thin:@//localhost:1521/xe";
@@ -73,7 +76,7 @@ public class DbHelper {
             while ((line = rd.readLine()) != null) {
                 result.append(line);
             }
-            System.out.println(result.toString());
+            log.info(result.toString());
             if (resCode == 200) {
                 return result.toString();
             }

@@ -42,13 +42,13 @@ public class Main {
                     if (sender != null) {
                         Order oldOrder = mainService.getOrderByCommentId(order.getCommentId());
                         if (oldOrder == null) {
-                            Long id = mainService.createOrder(order);
-                            if (id != null) log.info("Comment with id: " + id + " inserted successfully to db!");
-                        }
+                            log.info("User " + sender.getUserName() + " with id: " + sender.getId()
+                                    + " want to buy product, media id: " + p.getPostId() + " qty:" + order.getQty()
+                                    + " comment id:" + order.getCommentId());
 
-                        log.info("User " + sender.getUserName() + " with id: " + sender.getId()
-                                + " want to buy product, media id: " + p.getId() + " qty:" + order.getQty()
-                                + " comment id:" + order.getId());
+                            Long id = mainService.createOrder(order);
+                            if (id != null) log.info("Order with id: " + id + " inserted successfully to db!");
+                        }
                     }
                 }
             }
