@@ -62,7 +62,7 @@ public class Post {
             String tagName = tagStrings.getString(i).toLowerCase();
 
             if (tagName.contains(NAME_TAG)) {
-                String productName = tagName.replace(NAME_TAG, "");
+                String productName = tagName.replace(NAME_TAG, "").replaceAll("_", " ");
                 setProductName(productName);
             }
 

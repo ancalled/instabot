@@ -1,9 +1,6 @@
 package com.instabot.service.impl;
 
-import com.instabot.models.Order;
-import com.instabot.models.Post;
-import com.instabot.models.Tag;
-import com.instabot.models.User;
+import com.instabot.models.*;
 import com.instabot.utils.AccessTokenHelper;
 import com.instabot.utils.Constants;
 import org.json.JSONArray;
@@ -84,7 +81,7 @@ public class InstaService {
         return new Post(object.getJSONObject("data"));
     }
 
-    public List<Order> getOrdersByMediaId(String mediaId) {
+    public List<Order> getOrdersByMediaId(String mediaId, CommentType commentType) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("media_id", mediaId);
         String url = getUrl(Constants.Instagram.GET_MEDIA_COMMENTS, map);
@@ -92,7 +89,11 @@ public class InstaService {
         ArrayList<Order> orders = new ArrayList<>();
         for (int i = 0; i < commentObjects.length(); i++) {
             Order order = new Order(commentObjects.getJSONObject(i), mediaId);
-            if (order.getQty() > 0) {
+            if (commentType.equals(CommentType.ORDER) && order.getQty() > 0) {
+                orders.add(order);
+            } else if (commentType.equals(CommentType.AUTHORIZATION) && order.getAuthCode() != null) {
+                orders.add(order);
+            } else if (commentType.equals(CommentType.CONFIRM) && order.getText().contains(Constants.CONFIRM_TAG)) {
                 orders.add(order);
             }
         }

@@ -4,6 +4,8 @@ public class Constants {
 
     public static final String SELL_TAG = "sell_viaphone";
     public static final String BUY_TAG = "#buy_viaphone";
+    public static final String AUTH_CODE_TAG = "#code_viaphone";
+    public static final String CONFIRM_TAG = "#confirm_viaphone";
     public static final String NAME_TAG = "name_";
     public static final String PRICE_TAG = "price_";
     public static final String QTY_TAG = "qty_";

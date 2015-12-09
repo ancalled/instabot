@@ -1,8 +1,6 @@
 package com.instabot;
 
-import com.instabot.models.Order;
-import com.instabot.models.Post;
-import com.instabot.models.Payment;
+import com.instabot.models.*;
 import com.instabot.service.DbService;
 import com.instabot.service.impl.InstaService;
 import com.instabot.service.impl.DbServiceImpl;
@@ -25,7 +23,10 @@ public class Main {
     public static void main(String[] args) {
         Main main = new Main();
         main.dbService = DbServiceImpl.getInstance();
-        main.scanMediaToSell();
+//        main.scanMediaToSell();
+//        main.scanOrdersComments();
+//        main.scanAuthorizeComments();
+        main.scanConfirmComments();
     }
 
     private void scanMediaToSell() {
@@ -36,9 +37,14 @@ public class Main {
                 Long id = dbService.createPost(p);
                 if (id != null) log.info("Post with id: " + id + " inserted successfully to db!");
             }
+        }
+    }
 
-            if (p.getCommentCount() > 0 && p.getLeavesQty() > 0) {
-                List<Order> orders = instaService.getOrdersByMediaId(p.getPostId());
+    private void scanOrdersComments() {
+        List<Post> activePosts = dbService.getActivePosts();
+        for (Post p : activePosts) {
+            if (p.getLeavesQty() > 0) {
+                List<Order> orders = instaService.getOrdersByMediaId(p.getPostId(), CommentType.ORDER);
                 for (Order order : orders) {
                     if (order.getUserName() != null) {
                         Order oldOrder = dbService.getOrderByCommentId(order.getCommentId());
@@ -47,18 +53,22 @@ public class Main {
                                     + " want to buy product, media id: " + p.getPostId() + " qty:" + order.getQty()
                                     + " comment id:" + order.getCommentId());
 
-                            Long id = dbService.createOrder(order);
-                            if (id != null) {
-                                log.info("Order with id: " + id + " inserted successfully to db!");
-                                Payment payment = viaphoneService.createPayment(p, order);
-                                if (payment.getStatus().equals(Payment.Status.OK)
-                                        && payment.getPaymentStatus().equals(Payment.PaymentStatus.CREATED)) {
-
-                                    dbService.createPayment(payment);
+                            Response response = viaphoneService.createPayment(p, order);
+                            if (response.getStatus().equals(Response.Status.OK)) {
+                                order.setPaymentId(response.getPaymentId());
+                                order.setDiscountPrice(response.getDiscountPrice());
+                                order.setStatus(response.getPaymentStatus());
+                                Long id = dbService.createOrder(order);
+                                if (id != null) {
+                                    log.info("Order with id: " + id + " inserted successfully to db!");
                                     String message = "@" + order.getUserName() + " your order created successfully! " +
-                                            "Please comment here your authorization code like #code_viaphone=****";
+                                            "Please comment here your authorization code like #code_viaphone****";
                                     instaService.postComment(p.getPostId(), message);
                                 }
+                            } else if (response.getStatus().equals(Response.Status.CUSTOMER_NOT_FOUND)) {
+                                String message = "@" + order.getUserName() + " your don't registered on viaphone! " +
+                                        "Please register payviaphone.com";
+                                instaService.postComment(p.getPostId(), message);
                             }
                         }
                     }
@@ -67,6 +77,46 @@ public class Main {
         }
     }
 
+    private void scanAuthorizeComments() {
+        List<Post> activePosts = dbService.getActivePosts();
+        for (Post p : activePosts) {
+            List<Order> orders = instaService.getOrdersByMediaId(p.getPostId(), CommentType.AUTHORIZATION);
+            for (Order order : orders) {
+                List<Order> userOrders = dbService.getOrdersByPostIdUserStatus(p.getPostId(), order.getUserName(), PaymentStatus.CREATED);
+                for (Order userOrder : userOrders) {
+                    Response response = viaphoneService.authorizePayment(order.getAuthCode(),
+                            userOrder.getPaymentId(), p.getUserName());
+                    if (response.getStatus().equals(Response.Status.OK)) {
+                        dbService.updateOrderStatus(userOrder.getId(), response.getPaymentStatus());
+                        Response lookupRes = viaphoneService.lookupPayment(userOrder.getPaymentId(), p.getUserName());
+                        if (lookupRes.getStatus().equals(Response.Status.OK)) {
+                            dbService.updateOrder(userOrder.getId(), lookupRes.getDiscountPrice());
+                            String message = "@" + userOrder.getUserName() + " your order authorized successfully " +
+                                    "with discount amount: " + lookupRes.getDiscountPrice() +
+                                    " Please comment here tag #confirm_viaphone tag to confirm payment!";
+                            instaService.postComment(p.getPostId(), message);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void scanConfirmComments() {
+        List<Post> activePosts = dbService.getActivePosts();
+        for (Post p : activePosts) {
+            List<Order> orders = instaService.getOrdersByMediaId(p.getPostId(), CommentType.CONFIRM);
+            for (Order order : orders) {
+                List<Order> userOrders = dbService.getOrdersByPostIdUserStatus(p.getPostId(), order.getUserName(), PaymentStatus.AUTHORIZED);
+                for (Order userOrder : userOrders) {
+                    Response response = viaphoneService.confirmPayment(userOrder.getPaymentId(), p.getUserName());
+                    if (response.getStatus().equals(Response.Status.OK)) {
+                        dbService.updateOrderStatus(userOrder.getId(), response.getPaymentStatus());
+                    }
+                }
+            }
+        }
+    }
 
 //        Tag tag = instaService.getTag(SELL_TAG);
 //        List<Tag> tags = instaService.searchTags(SELL_TAG);

@@ -1,9 +1,7 @@
 DROP TABLE POSTS CASCADE CONSTRAINTS;
 DROP TABLE ORDERS CASCADE CONSTRAINTS;
-DROP TABLE PAYMENTS CASCADE CONSTRAINTS;
 DROP SEQUENCE posts_seq;
 DROP SEQUENCE orders_seq;
-DROP SEQUENCE payments_seq;
 
 CREATE TABLE POSTS (
   id                  INT PRIMARY KEY,
@@ -40,6 +38,9 @@ CREATE TABLE ORDERS (
   text        CLOB,
   user_id     VARCHAR(500),
   user_name   VARCHAR(500),
+  payment_id     INT UNIQUE,
+  discount_price DECIMAL(10, 2),
+  status INT,
   whenCreated TIMESTAMP,
   FOREIGN KEY (post_id) REFERENCES POSTS (post_id)
 );
@@ -50,27 +51,6 @@ BEFORE INSERT ON ORDERS
 FOR EACH ROW
   BEGIN
     SELECT orders_seq.NEXTVAL
-    INTO :new.id
-    FROM dual;
-  END;
-
-CREATE TABLE PAYMENTS (
-  id             INT PRIMARY KEY,
-  payment_id     INT UNIQUE,
-  customer       VARCHAR(500),
-  merchant       VARCHAR(500),
-  discount_price DECIMAL(10, 2),
-  payment_status INT,
-  status         INT,
-  whenCreated    TIMESTAMP
-);
-
-CREATE SEQUENCE payments_seq;
-CREATE OR REPLACE TRIGGER payments_trg
-BEFORE INSERT ON PAYMENTS
-FOR EACH ROW
-  BEGIN
-    SELECT payments_seq.NEXTVAL
     INTO :new.id
     FROM dual;
   END;

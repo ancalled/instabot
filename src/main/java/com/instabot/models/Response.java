@@ -3,9 +3,8 @@ package com.instabot.models;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Payment {
+public class Response {
 
-    private long id;
     private long paymentId;
     private String customer;
     private String merchant;
@@ -13,28 +12,21 @@ public class Payment {
     private double discountPrice;
     private Status status;
 
-    public Payment(JSONObject obj) throws JSONException {
+    public Response(JSONObject obj) throws JSONException {
         setPaymentId(obj.getLong("paymentId"));
-        setCustomer(obj.getString("customer"));
-        setMerchant(obj.getString("merchant"));
+        if (!obj.isNull("customer")) {
+            setCustomer(obj.getString("customer"));
+        }
+
+        if (!obj.isNull("merchant")) {
+            setMerchant(obj.getString("merchant"));
+        }
+
         setDiscountPrice(obj.getDouble("discountPrice"));
         setStatus(Status.valueOf(obj.getString("status")));
-
         if (!obj.isNull("paymentStatus")) {
             setPaymentStatus(PaymentStatus.valueOf(obj.getString("paymentStatus")));
         }
-    }
-
-    public Payment() {
-
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public long getPaymentId() {
@@ -106,27 +98,8 @@ public class Payment {
             this.code = code;
             this.comment = comment;
         }
-
-        public int getCode() {
-            return code;
-        }
-
-        public String getComment() {
-            return comment;
-        }
-
     }
 
-    public enum PaymentStatus {
-        CREATED,
-        AUTHORIZED,
-        FUNDED,
-        INTRANSIT,
-        SETTLED,
-        REFUNDED,
-        PARTIALLY_REFUNDED,
-        CANCELED;
-    }
 
     @Override
     public String toString() {

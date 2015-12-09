@@ -1,7 +1,7 @@
 package com.instabot.service.impl;
 
 import com.instabot.models.Order;
-import com.instabot.models.Payment;
+import com.instabot.models.PaymentStatus;
 import com.instabot.models.Post;
 import com.instabot.service.DbService;
 import com.instabot.utils.DbHelper;
@@ -15,7 +15,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 public class DbServiceImpl implements DbService {
@@ -62,6 +61,11 @@ public class DbServiceImpl implements DbService {
     }
 
     @Override
+    public List<Post> getActivePosts() {
+        return db.query("SELECT * FROM POSTS WHERE STATUS=?", new PostMapper(), Post.Status.ACTIVE.ordinal());
+    }
+
+    @Override
     public Post getPost(String postId) {
         List<Post> posts = db.query("SELECT * FROM POSTS WHERE POST_ID=?", new PostMapper(), postId);
         return posts != null && !posts.isEmpty() ? posts.get(0) : null;
@@ -69,8 +73,8 @@ public class DbServiceImpl implements DbService {
 
     @Override
     public Long createOrder(Order order) {
-        String insert = "INSERT INTO ORDERS (COMMENT_ID, POST_ID, QTY, TEXT, USER_ID, USER_NAME, WHENCREATED)" +
-                " VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String insert = "INSERT INTO ORDERS (COMMENT_ID, POST_ID, QTY, TEXT, USER_ID, USER_NAME, PAYMENT_ID, " +
+                "DISCOUNT_PRICE, STATUS, WHENCREATED) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         db.update(connection -> {
@@ -81,7 +85,10 @@ public class DbServiceImpl implements DbService {
             ps.setString(4, order.getText());
             ps.setString(5, order.getUserId());
             ps.setString(6, order.getUserName());
-            ps.setTimestamp(7, new Timestamp(order.getWhenCreated().getTime()));
+            ps.setLong(7, order.getPaymentId());
+            ps.setDouble(8, order.getDiscountPrice());
+            ps.setInt(9, order.getStatus().ordinal());
+            ps.setTimestamp(10, new Timestamp(order.getWhenCreated().getTime()));
             return ps;
         }, keyHolder);
         return keyHolder.getKey().longValue();
@@ -89,29 +96,24 @@ public class DbServiceImpl implements DbService {
 
     @Override
     public Order getOrderByCommentId(String commentId) {
-        List<Order> orders = db.query("SELECT * FROM ORDERS WHERE COMMENT_ID=?", new CommentMapper(), commentId);
+        List<Order> orders = db.query("SELECT * FROM ORDERS WHERE COMMENT_ID=?", new OrderMapper(), commentId);
         return orders != null && !orders.isEmpty() ? orders.get(0) : null;
     }
 
+    @Override
+    public List<Order> getOrdersByPostIdUserStatus(String postId, String userName, PaymentStatus status) {
+        return db.query("SELECT * FROM ORDERS WHERE POST_ID=? and USER_NAME=? and ORDERS.STATUS=?",
+                new OrderMapper(), postId, userName, status.ordinal());
+    }
 
     @Override
-    public Long createPayment(Payment payment) {
-        String insert = "INSERT INTO PAYMENTS (PAYMENT_ID, CUSTOMER, MERCHANT, DISCOUNT_PRICE, PAYMENT_STATUS, STATUS, WHENCREATED)" +
-                " VALUES (?, ?, ?, ?, ?, ?, ?)";
+    public void updateOrderStatus(long id, PaymentStatus status) {
+        db.update("UPDATE ORDERS SET STATUS=? WHERE ID=?", status.ordinal(), id);
+    }
 
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        db.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(insert, new String[]{"id"});
-            ps.setLong(1, payment.getPaymentId());
-            ps.setString(2, payment.getCustomer());
-            ps.setString(3, payment.getMerchant());
-            ps.setDouble(4, payment.getDiscountPrice());
-            ps.setInt(5, payment.getPaymentStatus().ordinal());
-            ps.setInt(6, payment.getStatus().ordinal());
-            ps.setTimestamp(7, new Timestamp(new Date().getTime()));
-            return ps;
-        }, keyHolder);
-        return keyHolder.getKey().longValue();
+    @Override
+    public void updateOrder(long id, double discountPrice) {
+        db.update("UPDATE ORDERS SET DISCOUNT_PRICE=? WHERE ID=?", discountPrice, id);
     }
 
     private static class PostMapper implements RowMapper {
@@ -138,7 +140,7 @@ public class DbServiceImpl implements DbService {
         }
     }
 
-    private static class CommentMapper implements RowMapper {
+    private static class OrderMapper implements RowMapper {
         @Override
         public Object mapRow(ResultSet rs, int i) throws SQLException {
             Order order = new Order();
@@ -149,25 +151,12 @@ public class DbServiceImpl implements DbService {
             order.setText(rs.getString("TEXT"));
             order.setUserId(rs.getString("USER_ID"));
             order.setUserName(rs.getString("USER_NAME"));
+            order.setPaymentId(rs.getLong("PAYMENT_ID"));
+            order.setDiscountPrice(rs.getDouble("DISCOUNT_PRICE"));
+            Integer status = rs.getInt("STATUS");
+            order.setStatus(PaymentStatus.values()[status]);
             order.setWhenCreated(rs.getTimestamp("WHENCREATED"));
             return order;
-        }
-    }
-
-    private static class PaymentMapper implements RowMapper {
-        @Override
-        public Object mapRow(ResultSet rs, int i) throws SQLException {
-            Payment payment = new Payment();
-            payment.setId(rs.getLong("ID"));
-            payment.setPaymentId(rs.getLong("payment_id"));
-            payment.setCustomer(rs.getString("customer"));
-            payment.setMerchant(rs.getString("merchant"));
-            payment.setDiscountPrice(rs.getDouble("discount_price"));
-            Integer status = rs.getInt("status");
-            payment.setStatus(Payment.Status.values()[status]);
-            Integer paymentStatus = rs.getInt("payment_status");
-            payment.setPaymentStatus(Payment.PaymentStatus.values()[paymentStatus]);
-            return payment;
         }
     }
 }

@@ -6,6 +6,7 @@ import org.json.JSONObject;
 
 import java.util.Date;
 
+import static com.instabot.utils.Constants.AUTH_CODE_TAG;
 import static com.instabot.utils.Constants.BUY_TAG;
 
 public class Order {
@@ -17,6 +18,10 @@ public class Order {
     private String text;
     private String userId;
     private String userName;
+    private long paymentId;
+    private PaymentStatus status;
+    private double discountPrice;
+    private String authCode;
     private Date whenCreated;
 
     public Order() {
@@ -37,6 +42,11 @@ public class Order {
             String qtyStr = getText().replace(BUY_TAG, "");
             int qty = !qtyStr.equals("") ? Integer.parseInt(qtyStr) : 1;
             setQty(qty);
+        }
+
+        if (getText().contains(AUTH_CODE_TAG)) {
+            String authCode = getText().replace(AUTH_CODE_TAG, "");
+            setAuthCode(authCode);
         }
     }
 
@@ -104,8 +114,39 @@ public class Order {
         this.whenCreated = whenCreated;
     }
 
+    public long getPaymentId() {
+        return paymentId;
+    }
+
+    public void setPaymentId(long paymentId) {
+        this.paymentId = paymentId;
+    }
+
+    public PaymentStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(PaymentStatus status) {
+        this.status = status;
+    }
+
+    public double getDiscountPrice() {
+        return discountPrice;
+    }
+
+    public void setDiscountPrice(double discountPrice) {
+        this.discountPrice = discountPrice;
+    }
+
     public boolean equals(Object o) {
         return o != null && (o == this || o.getClass() == this.getClass() && ((Order) o).getCommentId().equals(getCommentId()));
     }
 
+    public String getAuthCode() {
+        return authCode;
+    }
+
+    public void setAuthCode(String authCode) {
+        this.authCode = authCode;
+    }
 }
