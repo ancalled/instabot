@@ -15,7 +15,8 @@ public class Order {
     private String postId;
     private int qty;
     private String text;
-    private User user;
+    private String userId;
+    private String userName;
     private Date whenCreated;
 
     public Order() {
@@ -24,7 +25,11 @@ public class Order {
     public Order(JSONObject obj, String postId) throws JSONException {
         setCommentId(obj.getString("id"));
         setText(obj.getString("text"));
-        setUser((new User(obj.getJSONObject("from"))));
+
+        User user = new User(obj.getJSONObject("from"));
+        setUserId(user.getId());
+        setUserName(user.getUserName());
+
         setWhenCreated(Utils.timestampToDate(obj.getString("created_time")));
         setPostId(postId);
 
@@ -75,12 +80,20 @@ public class Order {
         this.text = text;
     }
 
-    public User getUser() {
-        return user;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public Date getWhenCreated() {

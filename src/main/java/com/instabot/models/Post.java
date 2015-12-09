@@ -8,6 +8,7 @@ import com.instabot.utils.Utils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import static com.instabot.utils.Constants.*;
 
 public class Post {
@@ -15,7 +16,8 @@ public class Post {
     private long id;
     private String postId;
     private String link;
-    private User user;
+    private String userId;
+    private String userName;
     private Date whenCreated;
     private String captionId;
     private String captionText;
@@ -35,9 +37,12 @@ public class Post {
 
         setPostId(obj.getString("id"));
         setLink(obj.optString("link"));
-        setUser(new User(obj.getJSONObject("user")));
-        setWhenCreated(Utils.timestampToDate(obj.getString("created_time")));
 
+        User user = new User(obj.getJSONObject("user"));
+        setUserId(user.getId());
+        setUserName(user.getUserName());
+
+        setWhenCreated(Utils.timestampToDate(obj.getString("created_time")));
         setQty(1);
         setLeavesQty(1);
 
@@ -103,12 +108,20 @@ public class Post {
         this.link = link;
     }
 
-    public User getUser() {
-        return user;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public Date getWhenCreated() {

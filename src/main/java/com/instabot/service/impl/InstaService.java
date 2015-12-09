@@ -13,12 +13,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.instabot.utils.DbHelper.*;
+import static com.instabot.utils.RequestHelper.*;
 
 public class InstaService {
 
     public List<User> searchUsersByName(String name) {
-        String url = getUrl(Constants.Users.SEARCH_USER_BY_NAME, null) + "&q=" + name;
+        String url = getUrl(Constants.Instagram.SEARCH_USER_BY_NAME, null) + "&q=" + name;
         JSONArray objects = makeRequestJson(url).getJSONArray("data");
 
         List<User> users = new ArrayList<>();
@@ -31,7 +31,7 @@ public class InstaService {
     public User getUserById(String userId) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("user_id", userId);
-        String url = getUrl(Constants.Users.GET_DATA, map);
+        String url = getUrl(Constants.Instagram.GET_DATA, map);
         JSONObject userObject = makeRequestJson(url);
         return userObject != null ? new User(userObject.getJSONObject("data")) : null;
     }
@@ -40,7 +40,7 @@ public class InstaService {
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("user_id", userId);
-        String url = getUrl(Constants.Relationships.GET_FOLLOWS, map);
+        String url = getUrl(Constants.Instagram.GET_FOLLOWS, map);
         JSONArray objects = makeRequestJson(url).getJSONArray("data");
 
         List<User> users = new ArrayList<>();
@@ -53,7 +53,7 @@ public class InstaService {
     public List<User> getFollowers(String userId) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("user_id", userId);
-        String url = getUrl(Constants.Relationships.GET_FOLLOWERS, map);
+        String url = getUrl(Constants.Instagram.GET_FOLLOWERS, map);
         JSONArray objects = makeRequestJson(url).getJSONArray("data");
 
         List<User> users = new ArrayList<>();
@@ -66,7 +66,7 @@ public class InstaService {
     public List<Post> getRecentUserMedias(String userId) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("user_id", userId);
-        String url = getUrl(Constants.Users.GET_RECENT_MEDIA, map);
+        String url = getUrl(Constants.Instagram.GET_RECENT_MEDIA, map);
         JSONArray objects = makeRequestJson(url).getJSONArray("data");
 
         List<Post> posts = new ArrayList<>();
@@ -79,7 +79,7 @@ public class InstaService {
     public Post getMedia(String mediaId) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("media_id", mediaId);
-        String url = getUrl(Constants.Media.GET_MEDIA, map);
+        String url = getUrl(Constants.Instagram.GET_MEDIA, map);
         JSONObject object = makeRequestJson(url);
         return new Post(object.getJSONObject("data"));
     }
@@ -87,7 +87,7 @@ public class InstaService {
     public List<Order> getOrdersByMediaId(String mediaId) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("media_id", mediaId);
-        String url = getUrl(Constants.Comments.GET_MEDIA_COMMENTS, map);
+        String url = getUrl(Constants.Instagram.GET_MEDIA_COMMENTS, map);
         JSONArray commentObjects = makeRequestJson(url).getJSONArray("data");
         ArrayList<Order> orders = new ArrayList<>();
         for (int i = 0; i < commentObjects.length(); i++) {
@@ -102,7 +102,7 @@ public class InstaService {
     public Order postComment(String mediaId, String text) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("media_id", mediaId);
-        String url = getUrl(Constants.Comments.POST_MEDIA_COMMENT, map);
+        String url = getUrl(Constants.Instagram.POST_MEDIA_COMMENT, map);
 
         HashMap<String, Object> params = new HashMap<>();
         params.put("text", text);
@@ -114,7 +114,7 @@ public class InstaService {
     public Tag getTag(String tagName) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("tag_name", tagName);
-        String url = getUrl(Constants.Tags.GET_TAG, map);
+        String url = getUrl(Constants.Instagram.GET_TAG, map);
         JSONObject object = makeRequestJson(url);
         return new Tag(object.getJSONObject("data"));
     }
@@ -123,7 +123,7 @@ public class InstaService {
         tagName = tagName.replaceAll("^#*", "");
         HashMap<String, Object> map = new HashMap<>();
         map.put("tag_name", tagName);
-        String url = getUrl(Constants.Tags.GET_RECENT_TAGED_MEDIA, map);
+        String url = getUrl(Constants.Instagram.GET_RECENT_TAGED_MEDIA, map);
         JSONArray objects = makeRequestJson(url).getJSONArray("data");
 
         List<Post> posts = new ArrayList<>();
@@ -135,7 +135,7 @@ public class InstaService {
     }
 
     public List<Tag> searchTags(String tagName) {
-        String url = getUrl(Constants.Tags.SEARCH_TAGS, null) + "&q=" + tagName;
+        String url = getUrl(Constants.Instagram.SEARCH_TAGS, null) + "&q=" + tagName;
         JSONArray tagItems = makeRequestJson(url).getJSONArray("data");
         ArrayList<Tag> tags = new ArrayList<>();
         for (int i = 0; i < tagItems.length(); i++) {

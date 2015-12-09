@@ -2,10 +2,11 @@ package com.instabot;
 
 import com.instabot.models.Order;
 import com.instabot.models.Post;
-import com.instabot.models.User;
-import com.instabot.service.MainService;
+import com.instabot.models.Payment;
+import com.instabot.service.DbService;
 import com.instabot.service.impl.InstaService;
-import com.instabot.service.impl.MainServiceImpl;
+import com.instabot.service.impl.DbServiceImpl;
+import com.instabot.service.impl.ViaphoneService;
 import org.apache.log4j.Logger;
 
 import java.util.List;
@@ -17,37 +18,48 @@ public class Main {
     private static Logger log = Logger.getLogger(Main.class);
 
     private static InstaService instaService = new InstaService();
+    private static ViaphoneService viaphoneService = new ViaphoneService();
 
-    private MainService mainService;
+    private DbService dbService;
 
     public static void main(String[] args) {
         Main main = new Main();
-        main.mainService = MainServiceImpl.getInstance();
+        main.dbService = DbServiceImpl.getInstance();
         main.scanMediaToSell();
     }
 
     private void scanMediaToSell() {
         List<Post> posts = instaService.getRecentTaggedMedia(SELL_TAG);
         for (Post p : posts) {
-            Post oldPost = mainService.getPost(p.getPostId());
+            Post oldPost = dbService.getPost(p.getPostId());
             if (oldPost == null) {
-                Long id = mainService.createPost(p);
+                Long id = dbService.createPost(p);
                 if (id != null) log.info("Post with id: " + id + " inserted successfully to db!");
             }
 
-            if (p.getCommentCount() > 0) {
+            if (p.getCommentCount() > 0 && p.getLeavesQty() > 0) {
                 List<Order> orders = instaService.getOrdersByMediaId(p.getPostId());
                 for (Order order : orders) {
-                    User sender = order.getUser();
-                    if (sender != null) {
-                        Order oldOrder = mainService.getOrderByCommentId(order.getCommentId());
+                    if (order.getUserName() != null) {
+                        Order oldOrder = dbService.getOrderByCommentId(order.getCommentId());
                         if (oldOrder == null) {
-                            log.info("User " + sender.getUserName() + " with id: " + sender.getId()
+                            log.info("User " + order.getUserName() + " with id: " + order.getUserId()
                                     + " want to buy product, media id: " + p.getPostId() + " qty:" + order.getQty()
                                     + " comment id:" + order.getCommentId());
 
-                            Long id = mainService.createOrder(order);
-                            if (id != null) log.info("Order with id: " + id + " inserted successfully to db!");
+                            Long id = dbService.createOrder(order);
+                            if (id != null) {
+                                log.info("Order with id: " + id + " inserted successfully to db!");
+                                Payment payment = viaphoneService.createPayment(p, order);
+                                if (payment.getStatus().equals(Payment.Status.OK)
+                                        && payment.getPaymentStatus().equals(Payment.PaymentStatus.CREATED)) {
+
+                                    dbService.createPayment(payment);
+                                    String message = "@" + order.getUserName() + " your order created successfully! " +
+                                            "Please comment here your authorization code like #code_viaphone=****";
+                                    instaService.postComment(p.getPostId(), message);
+                                }
+                            }
                         }
                     }
                 }
