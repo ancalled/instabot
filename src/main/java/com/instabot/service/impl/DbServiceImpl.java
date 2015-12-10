@@ -4,32 +4,33 @@ import com.instabot.models.Order;
 import com.instabot.models.PaymentStatus;
 import com.instabot.models.Post;
 import com.instabot.service.DbService;
-import com.instabot.utils.DbHelper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
-import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Properties;
 
 public class DbServiceImpl implements DbService {
 
-    private static DbService instance;
+    private static final String driverClassName = "oracle.jdbc.OracleDriver";
+
     private JdbcTemplate db;
 
-    public DbServiceImpl() {
-        DataSource dataSource = DbHelper.getDataSource();
-        this.db = new JdbcTemplate(dataSource);
-    }
+    public DbServiceImpl(Properties prop) {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName(driverClassName);
+        dataSource.setUrl(prop.getProperty("db.url"));
+        dataSource.setUsername(prop.getProperty("db.username"));
+        dataSource.setPassword(prop.getProperty("db.password"));
 
-    public static DbService getInstance() {
-        if (instance != null) return instance;
-        return new DbServiceImpl();
+        this.db = new JdbcTemplate(dataSource);
     }
 
     @Override

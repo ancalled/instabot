@@ -10,6 +10,11 @@ public class Constants {
     public static final String PRICE_TAG = "price_";
     public static final String QTY_TAG = "qty_";
 
+    public static final String MSG_ORDER_CREATED = "@%s your order created successfully! Please comment here your authorization code like #code_viaphone****";
+    public static final String MSG_NOT_REGISTERED = "@%s your don't registered on viaphone! Please register on payviaphone.com";
+    public static final String MSG_ORDER_AUTH = "@%s your order authorized successfully with discount amount: "
+            + "%.2f Please comment here tag #confirm_viaphone tag to confirm payment!";
+
 
     public class Instagram {
 
