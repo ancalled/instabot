@@ -30,6 +30,7 @@ public class MediaThread implements Runnable {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
+            log.error(e.getMessage());
         }
     }
 

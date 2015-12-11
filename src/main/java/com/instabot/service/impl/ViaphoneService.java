@@ -4,6 +4,7 @@ import com.instabot.models.Order;
 import com.instabot.models.Post;
 import com.instabot.models.Response;
 import com.instabot.utils.Constants;
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -11,6 +12,8 @@ import java.util.HashMap;
 import static com.instabot.utils.RequestHelper.*;
 
 public class ViaphoneService {
+
+    private static Logger log = Logger.getLogger(ViaphoneService.class);
 
     public Response createPayment(Post post, Order order) {
 
@@ -24,7 +27,7 @@ public class ViaphoneService {
         params.put("details", details);
         params.put("instagram", true);
         JSONObject object = makeRequestJson(Constants.Viaphone.CREATE_PAYMENT, params);
-        System.out.println(object);
+        log.info(object);
         return new Response(object);
     }
 
@@ -35,7 +38,7 @@ public class ViaphoneService {
         params.put("merchant", merchLogin);
         params.put("instagram", true);
         JSONObject object = makeRequestJson(Constants.Viaphone.AUTHORIZE_PAYMENT, params);
-        System.out.println(object);
+        log.info(object);
         return new Response(object);
     }
 
@@ -46,7 +49,7 @@ public class ViaphoneService {
         params.put("calcDiscount", true);
         params.put("instagram", true);
         JSONObject object = makeRequestJson(Constants.Viaphone.LOOKUP_PAYMENT, params);
-        System.out.println(object);
+        log.info(object);
         return new Response(object);
     }
 
@@ -56,7 +59,7 @@ public class ViaphoneService {
         params.put("merchant", merchLogin);
         params.put("instagram", true);
         JSONObject object = makeRequestJson(Constants.Viaphone.CONFIRM_PAYMENT, params);
-        System.out.println(object);
+        log.info(object);
         return new Response(object);
     }
 }

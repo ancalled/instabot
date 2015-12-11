@@ -36,8 +36,9 @@ public class RequestHelper {
                     uri = uri.replaceAll("\\{" + key + "\\}", value);
                 }
             }
-        } catch (Exception ignored) {
-            ignored.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
         }
         uri += "?access_token=" + AccessTokenHelper.getAccessToken();
         return uri;
@@ -63,6 +64,7 @@ public class RequestHelper {
 
         } catch (IOException e) {
             e.printStackTrace();
+            log.error(e.getMessage());
         }
         return null;
     }
@@ -88,6 +90,7 @@ public class RequestHelper {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            log.error(e.getMessage());
         }
         return result.toString();
     }
@@ -101,6 +104,7 @@ public class RequestHelper {
             }
         } catch (JSONException e) {
             e.printStackTrace();
+            log.error(e.getMessage());
         }
         return res;
     }
@@ -111,6 +115,7 @@ public class RequestHelper {
             res = new JSONObject(new JSONTokener(makePostRequest(url, params)));
         } catch (JSONException e) {
             e.printStackTrace();
+            log.error(e.getMessage());
         }
         return res;
     }

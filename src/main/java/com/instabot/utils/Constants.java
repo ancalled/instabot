@@ -55,7 +55,8 @@ public class Constants {
 
     public class Viaphone {
 
-        public static final String API_ROOT = "http://localhost:8081/viaphone/api";
+        public static final String API_ROOT = "http://payviaphone.com/api";
+//        public static final String API_ROOT = "http://localhost:8081/viaphone/api";
 
         public static final String CREATE_PAYMENT = API_ROOT + "/create-payment";
         public static final String AUTHORIZE_PAYMENT = API_ROOT + "/authorize-payment";

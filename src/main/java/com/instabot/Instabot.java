@@ -34,6 +34,7 @@ public class Instabot {
             prop.load(input);
         } catch (IOException ex) {
             ex.printStackTrace();
+            log.error(ex.getMessage());
         }
 
         Instabot bot = new Instabot(prop);
@@ -45,10 +46,10 @@ public class Instabot {
         AuthorizeThread authThread = new AuthorizeThread(bot.instaService, bot.viaphoneService, bot.dbService);
         ConfirmThread confirmThread = new ConfirmThread(bot.instaService, bot.viaphoneService, bot.dbService);
 
-        scheduler.scheduleAtFixedRate(mediaThread, 0, 3, TimeUnit.MINUTES);
-        scheduler.scheduleAtFixedRate(ordersThread, 0, 1, TimeUnit.MINUTES);
-        scheduler.scheduleAtFixedRate(authThread, 0, 1, TimeUnit.MINUTES);
-        scheduler.scheduleAtFixedRate(confirmThread, 0, 1, TimeUnit.MINUTES);
+        scheduler.scheduleAtFixedRate(mediaThread, 0, 10, TimeUnit.MINUTES);
+        scheduler.scheduleAtFixedRate(ordersThread, 0, 5, TimeUnit.MINUTES);
+        scheduler.scheduleAtFixedRate(authThread, 0, 5, TimeUnit.MINUTES);
+        scheduler.scheduleAtFixedRate(confirmThread, 0, 5, TimeUnit.MINUTES);
     }
 
     public Instabot(Properties prop) {
