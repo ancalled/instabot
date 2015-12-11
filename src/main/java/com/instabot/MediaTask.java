@@ -9,14 +9,14 @@ import java.util.List;
 
 import static com.instabot.utils.Constants.*;
 
-public class MediaThread implements Runnable {
+public class MediaTask implements Runnable {
 
-    private static Logger log = Logger.getLogger(MediaThread.class);
+    private static Logger log = Logger.getLogger(MediaTask.class);
 
     private InstaService instaService;
     private DbService dbService;
 
-    public MediaThread(InstaService instaService, DbService dbService) {
+    public MediaTask(InstaService instaService, DbService dbService) {
         this.instaService = instaService;
         this.dbService = dbService;
     }

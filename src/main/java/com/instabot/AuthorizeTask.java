@@ -10,15 +10,15 @@ import java.util.List;
 
 import static com.instabot.utils.Constants.*;
 
-public class AuthorizeThread implements Runnable {
+public class AuthorizeTask implements Runnable {
 
-    private static Logger log = Logger.getLogger(MediaThread.class);
+    private static Logger log = Logger.getLogger(MediaTask.class);
 
     private InstaService instaService;
     private ViaphoneService viaphoneService;
     private DbService dbService;
 
-    public AuthorizeThread(InstaService instaService, ViaphoneService viaphoneService, DbService dbService) {
+    public AuthorizeTask(InstaService instaService, ViaphoneService viaphoneService, DbService dbService) {
         this.instaService = instaService;
         this.viaphoneService = viaphoneService;
         this.dbService = dbService;

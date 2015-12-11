@@ -10,15 +10,15 @@ import java.util.List;
 
 import static com.instabot.utils.Constants.*;
 
-public class OrdersThread implements Runnable {
+public class OrdersTask implements Runnable {
 
-    private static Logger log = Logger.getLogger(OrdersThread.class);
+    private static Logger log = Logger.getLogger(OrdersTask.class);
 
     private InstaService instaService;
     private ViaphoneService viaphoneService;
     private DbService dbService;
 
-    public OrdersThread(InstaService instaService, ViaphoneService viaphoneService, DbService dbService) {
+    public OrdersTask(InstaService instaService, ViaphoneService viaphoneService, DbService dbService) {
         this.instaService = instaService;
         this.viaphoneService = viaphoneService;
         this.dbService = dbService;

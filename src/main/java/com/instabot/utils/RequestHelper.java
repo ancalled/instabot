@@ -80,7 +80,7 @@ public class RequestHelper {
                 nameValuePairs.add(new BasicNameValuePair(arg.getKey(), arg.getValue().toString()));
             }
 
-            post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+            post.setEntity(new UrlEncodedFormEntity(nameValuePairs, "UTF-8"));
             HttpResponse response = client.execute(post);
 
             BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));

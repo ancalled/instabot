@@ -60,9 +60,5 @@ public class Constants {
         public static final String AUTHORIZE_PAYMENT = API_ROOT + "/authorize-payment";
         public static final String LOOKUP_PAYMENT = API_ROOT + "/lookup-payment";
         public static final String CONFIRM_PAYMENT = API_ROOT + "/confirm-payment";
-
-        public static void setApiRoot (String apiRoot) {
-            API_ROOT = apiRoot;
-        }
     }
 }

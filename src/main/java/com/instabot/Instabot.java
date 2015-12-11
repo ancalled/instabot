@@ -4,9 +4,7 @@ import com.instabot.service.DbService;
 import com.instabot.service.impl.InstaService;
 import com.instabot.service.impl.DbServiceImpl;
 import com.instabot.service.impl.ViaphoneService;
-import com.instabot.utils.Constants;
 import org.apache.log4j.Logger;
-import org.apache.log4j.net.SyslogAppender;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,11 +27,19 @@ public class Instabot {
 
     public static void main(String[] args) {
 
+        int periodMedia = 5;
+        int periodOrders = 2;
+        int periodAuth = 2;
+        int periodConfirm = 2;
+
         Properties prop = new Properties();
         try {
             InputStream input = new FileInputStream(APP_PROP);
             prop.load(input);
-            Constants.Viaphone.setApiRoot(prop.getProperty("viaphone.api"));
+            periodMedia = Integer.parseInt(prop.getProperty("period.media"));
+            periodOrders = Integer.parseInt(prop.getProperty("period.orders"));
+            periodAuth = Integer.parseInt(prop.getProperty("period.auth"));
+            periodConfirm = Integer.parseInt(prop.getProperty("period.confirm"));
         } catch (IOException ex) {
             ex.printStackTrace();
             log.error(ex.getMessage());
@@ -43,15 +49,15 @@ public class Instabot {
 
         log.info("Starting instabot...");
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        MediaThread mediaThread = new MediaThread(bot.instaService, bot.dbService);
-        OrdersThread ordersThread = new OrdersThread(bot.instaService, bot.viaphoneService, bot.dbService);
-        AuthorizeThread authThread = new AuthorizeThread(bot.instaService, bot.viaphoneService, bot.dbService);
-        ConfirmThread confirmThread = new ConfirmThread(bot.instaService, bot.viaphoneService, bot.dbService);
+        MediaTask media = new MediaTask(bot.instaService, bot.dbService);
+        OrdersTask orders = new OrdersTask(bot.instaService, bot.viaphoneService, bot.dbService);
+        AuthorizeTask auth = new AuthorizeTask(bot.instaService, bot.viaphoneService, bot.dbService);
+        ConfirmTask confirm = new ConfirmTask(bot.instaService, bot.viaphoneService, bot.dbService);
 
-        scheduler.scheduleAtFixedRate(mediaThread, 0, 10, TimeUnit.MINUTES);
-        scheduler.scheduleAtFixedRate(ordersThread, 0, 5, TimeUnit.MINUTES);
-        scheduler.scheduleAtFixedRate(authThread, 0, 5, TimeUnit.MINUTES);
-        scheduler.scheduleAtFixedRate(confirmThread, 0, 5, TimeUnit.MINUTES);
+        scheduler.scheduleAtFixedRate(media, 0, periodMedia, TimeUnit.MINUTES);
+        scheduler.scheduleAtFixedRate(orders, 0, periodOrders, TimeUnit.MINUTES);
+        scheduler.scheduleAtFixedRate(auth, 0, periodAuth, TimeUnit.MINUTES);
+        scheduler.scheduleAtFixedRate(confirm, 0, periodConfirm, TimeUnit.MINUTES);
     }
 
     public Instabot(Properties prop) {

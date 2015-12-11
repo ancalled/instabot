@@ -8,15 +8,15 @@ import org.apache.log4j.Logger;
 
 import java.util.List;
 
-public class ConfirmThread implements Runnable {
+public class ConfirmTask implements Runnable {
 
-    private static Logger log = Logger.getLogger(MediaThread.class);
+    private static Logger log = Logger.getLogger(MediaTask.class);
 
     private InstaService instaService;
     private ViaphoneService viaphoneService;
     private DbService dbService;
 
-    public ConfirmThread(InstaService instaService, ViaphoneService viaphoneService, DbService dbService) {
+    public ConfirmTask(InstaService instaService, ViaphoneService viaphoneService, DbService dbService) {
         this.instaService = instaService;
         this.viaphoneService = viaphoneService;
         this.dbService = dbService;
