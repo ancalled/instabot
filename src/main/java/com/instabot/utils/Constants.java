@@ -53,14 +53,18 @@ public class Constants {
         public static final String SEARCH_LOCATIONS = API_ROOT + "/locations/search";
     }
 
-    public class Viaphone {
+    public static class Viaphone {
 
-        public static final String API_ROOT = "http://payviaphone.com/api";
+        public static String API_ROOT = "http://payviaphone.com/api";
 //        public static final String API_ROOT = "http://localhost:8081/viaphone/api";
 
         public static final String CREATE_PAYMENT = API_ROOT + "/create-payment";
         public static final String AUTHORIZE_PAYMENT = API_ROOT + "/authorize-payment";
         public static final String LOOKUP_PAYMENT = API_ROOT + "/lookup-payment";
         public static final String CONFIRM_PAYMENT = API_ROOT + "/confirm-payment";
+
+        public static void setApiRoot (String apiRoot) {
+            API_ROOT = apiRoot;
+        }
     }
 }

@@ -4,6 +4,7 @@ import com.instabot.service.DbService;
 import com.instabot.service.impl.InstaService;
 import com.instabot.service.impl.DbServiceImpl;
 import com.instabot.service.impl.ViaphoneService;
+import com.instabot.utils.Constants;
 import org.apache.log4j.Logger;
 import org.apache.log4j.net.SyslogAppender;
 
@@ -32,6 +33,7 @@ public class Instabot {
         try {
             InputStream input = new FileInputStream(APP_PROP);
             prop.load(input);
+            Constants.Viaphone.setApiRoot(prop.getProperty("viaphone.api"));
         } catch (IOException ex) {
             ex.printStackTrace();
             log.error(ex.getMessage());
