@@ -117,11 +117,10 @@ public class DbServiceImpl implements DbService {
         db.update("UPDATE ORDERS SET DISCOUNT_PRICE=? WHERE ID=?", discountPrice, id);
     }
 
-    private static class PostMapper implements RowMapper {
+    private static class PostMapper implements RowMapper<Post> {
         @Override
-        public Object mapRow(ResultSet rs, int i) throws SQLException {
+        public Post mapRow(ResultSet rs, int i) throws SQLException {
             Post post = new Post();
-
             post.setId(rs.getLong("ID"));
             post.setPostId(rs.getString("POST_ID"));
             post.setLink(rs.getString("LINK"));
@@ -141,9 +140,9 @@ public class DbServiceImpl implements DbService {
         }
     }
 
-    private static class OrderMapper implements RowMapper {
+    private static class OrderMapper implements RowMapper<Order> {
         @Override
-        public Object mapRow(ResultSet rs, int i) throws SQLException {
+        public Order mapRow(ResultSet rs, int i) throws SQLException {
             Order order = new Order();
             order.setId(rs.getLong("ID"));
             order.setCommentId(rs.getString("COMMENT_ID"));
