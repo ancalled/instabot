@@ -100,10 +100,9 @@ public class Response {
         }
     }
 
-
     @Override
     public String toString() {
         return "paymentId: " + paymentId + " customer: " + customer + " merchant: " + merchant
-                + " paymentStatus:" + paymentStatus + " status: " + status;
+                + " paymentStatus:" + paymentStatus + " discountPrice: " + discountPrice + " status: " + status;
     }
 }

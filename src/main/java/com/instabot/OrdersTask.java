@@ -42,27 +42,31 @@ public class OrdersTask implements Runnable {
         activePosts.stream().filter(p -> p.getLeavesQty() > 0).forEach(p -> {
 
             List<Order> orders = instaService.getOrdersByMediaId(p.getPostId(), CommentType.ORDER);
+            log.info("Got" + orders.size() + " orders for post " + p.getPostId());
             orders.stream().filter(order -> order.getUserName() != null).forEach(order -> {
-
                 Order oldOrder = dbService.getOrderByCommentId(order.getCommentId());
                 if (oldOrder == null) {
-                    log.info("User " + order.getUserName() + " with id: " + order.getUserId()
-                            + " want to buy product, media id: " + p.getPostId() + " qty:" + order.getQty()
-                            + " comment id:" + order.getCommentId());
+                    if (p.getLeavesQty() >= order.getQty()) {
+                        Response response = viaphoneService.createPayment(p, order);
+                        if (response.getStatus().equals(Response.Status.OK)) {
+                            order.setPaymentId(response.getPaymentId());
+                            order.setDiscountPrice(response.getDiscountPrice());
+                            order.setStatus(response.getPaymentStatus());
 
-                    Response response = viaphoneService.createPayment(p, order);
-                    if (response.getStatus().equals(Response.Status.OK)) {
-                        order.setPaymentId(response.getPaymentId());
-                        order.setDiscountPrice(response.getDiscountPrice());
-                        order.setStatus(response.getPaymentStatus());
-                        Long id = dbService.createOrder(order);
-                        if (id != null) {
-                            log.info("Order with id: " + id + " inserted successfully to db!");
-                            instaService.postComment(p.getPostId(), String.format(MSG_ORDER_CREATED, order.getUserName()));
+                            log.info("Found new order: " + order.toString());
+
+                            Long id = dbService.createOrder(order);
+                            if (id != null) {
+                                log.info("Order with id: " + id + " inserted successfully to db!");
+                                instaService.postComment(p.getPostId(), String.format(MSG_ORDER_CREATED, order.getUserName()));
+                            }
+                        } else if (response.getStatus().equals(Response.Status.CUSTOMER_NOT_FOUND)) {
+                            instaService.postComment(p.getPostId(), String.format(MSG_NOT_REGISTERED, order.getUserName()));
                         }
-                    } else if (response.getStatus().equals(Response.Status.CUSTOMER_NOT_FOUND)) {
-                        instaService.postComment(p.getPostId(), String.format(MSG_NOT_REGISTERED, order.getUserName()));
+                    } else {
+                        instaService.postComment(p.getPostId(), String.format(MSG_NOT_ENOUGH, order.getUserName(), p.getLeavesQty()));
                     }
+
                 }
             });
         });

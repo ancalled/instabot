@@ -149,4 +149,11 @@ public class Order {
     public void setAuthCode(String authCode) {
         this.authCode = authCode;
     }
+
+    @Override
+    public String toString() {
+        return "\n\tid: " + id + "\n\tcommentId: " + commentId + "\n\tpostId: " + postId + "\n\tqty: " + qty
+                + "\n\ttext: " + text + "\n\tuserId: " + userId + "\n\tuserName: " + userName
+                + "\n\tpaymentId: " + paymentId + "\n\tPaymentStatus: " + status + "\n\tdiscountPrice: " + discountPrice;
+    }
 }

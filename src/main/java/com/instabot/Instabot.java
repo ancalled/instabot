@@ -48,6 +48,8 @@ public class Instabot {
         Instabot bot = new Instabot(prop);
 
         log.info("Starting instabot...");
+        log.info("Periods: \n\tmedia: " + periodMedia + "\n\torders: " + periodOrders
+                + "\n\tauth: " + periodAuth + "\n\tconfirm: " + periodConfirm);
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         MediaTask media = new MediaTask(bot.instaService, bot.dbService);
         OrdersTask orders = new OrdersTask(bot.instaService, bot.viaphoneService, bot.dbService);

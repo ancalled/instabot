@@ -39,12 +39,15 @@ public class ConfirmTask implements Runnable {
         List<Post> activePosts = dbService.getActivePosts();
         for (Post p : activePosts) {
             List<Order> orders = instaService.getOrdersByMediaId(p.getPostId(), CommentType.CONFIRM);
+            log.info("Got" + orders.size() + " orders to confirm for post " + p.getPostId());
             for (Order order : orders) {
                 List<Order> userOrders = dbService.getOrdersByPostIdUserStatus(p.getPostId(), order.getUserName(), PaymentStatus.AUTHORIZED);
                 for (Order userOrder : userOrders) {
                     Response response = viaphoneService.confirmPayment(userOrder.getPaymentId(), p.getUserName());
                     if (response.getStatus().equals(Response.Status.OK)) {
                         dbService.updateOrderStatus(userOrder.getId(), response.getPaymentStatus());
+                        int leavesQty = p.getLeavesQty() - userOrder.getQty();
+                        dbService.updatePost(p.getId(), leavesQty);
                     }
                 }
             }

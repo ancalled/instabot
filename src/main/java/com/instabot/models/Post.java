@@ -224,6 +224,13 @@ public class Post {
         return o != null && (o == this || o.getClass() == this.getClass() && ((Post) o).getPostId().equals(getPostId()));
     }
 
+    @Override
+    public String toString() {
+        return "\n\tid: " + id + " \n\tpostId: " + postId + " \n\tlink: " + link + " \n\tuserId: " + userId
+                + " \n\tuserName: " + userName + " \n\tcaptionText: " + captionText + " \n\tproductName: " + productName
+                + " \n\tprice: " + price + " \n\tqty: " + qty + " \n\tleavesQty: " + leavesQty;
+    }
+
     public enum Status {
         ACTIVE, ARCHIVE
     }

@@ -16,7 +16,6 @@ public class ViaphoneService {
     private static Logger log = Logger.getLogger(ViaphoneService.class);
 
     public Response createPayment(Post post, Order order) {
-
         double amount = post.getPrice() * order.getQty();
         String details = "product=" + post.getProductName() + "_price=" + post.getPrice() + "_qty=" + order.getQty();
 
@@ -26,8 +25,11 @@ public class ViaphoneService {
         params.put("amount", amount);
         params.put("details", details);
         params.put("instagram", true);
+
+        log.info("Sending CREATE_PAYMENT request: \n\tcustomer:" + order.getUserName()
+                + "\n\tmerchant:" + post.getUserName() + "\n\tamount:" + amount + "\n\tdetails:" + details);
         JSONObject object = makeRequestJson(Constants.Viaphone.CREATE_PAYMENT, params);
-        log.info(object);
+        log.info("Result: " + object);
         return new Response(object);
     }
 
@@ -37,8 +39,9 @@ public class ViaphoneService {
         params.put("payment", paymentId);
         params.put("merchant", merchLogin);
         params.put("instagram", true);
+        log.info("Sending AUTHORIZE_PAYMENT request: \n\tcode:" + code + "\n\tpayment:" + paymentId + "\n\tmerchant:" + merchLogin);
         JSONObject object = makeRequestJson(Constants.Viaphone.AUTHORIZE_PAYMENT, params);
-        log.info(object);
+        log.info("Result: " + object);
         return new Response(object);
     }
 
@@ -48,8 +51,9 @@ public class ViaphoneService {
         params.put("merchant", merchLogin);
         params.put("calcDiscount", true);
         params.put("instagram", true);
+        log.info("Sending LOOKUP_PAYMENT request: \n\tpayment:" + paymentId + "\n\tmerchant:" + merchLogin);
         JSONObject object = makeRequestJson(Constants.Viaphone.LOOKUP_PAYMENT, params);
-        log.info(object);
+        log.info("Result: " + object);
         return new Response(object);
     }
 
@@ -58,8 +62,9 @@ public class ViaphoneService {
         params.put("payment", paymentId);
         params.put("merchant", merchLogin);
         params.put("instagram", true);
+        log.info("Sending CONFIRM_PAYMENT request: \n\tpayment:" + paymentId + "\n\tmerchant:" + merchLogin);
         JSONObject object = makeRequestJson(Constants.Viaphone.CONFIRM_PAYMENT, params);
-        log.info(object);
+        log.info("Result: " + object);
         return new Response(object);
     }
 }

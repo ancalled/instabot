@@ -14,7 +14,7 @@ public class Constants {
     public static final String MSG_NOT_REGISTERED = "@%s your don't registered on viaphone! Please register on payviaphone.com";
     public static final String MSG_ORDER_AUTH = "@%s your order authorized successfully with discount amount: "
             + "%.2f Please comment here tag #confirm_viaphone tag to confirm payment!";
-
+    public static final String MSG_NOT_ENOUGH = "@%s Order rejected, not enough qty to buy. Available qty: %d";
 
     public class Instagram {
 

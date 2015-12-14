@@ -26,7 +26,6 @@ public class RequestHelper {
 
     private static Logger log = Logger.getLogger(RequestHelper.class);
 
-
     public static String getUrl(String uri, HashMap<String, Object> map) {
         try {
             if (map != null) {
@@ -57,7 +56,6 @@ public class RequestHelper {
             while ((line = rd.readLine()) != null) {
                 result.append(line);
             }
-            log.info(result.toString());
             if (resCode == 200) {
                 return result.toString();
             }

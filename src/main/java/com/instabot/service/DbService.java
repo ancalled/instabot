@@ -15,6 +15,8 @@ public interface DbService {
 
     List<Post> getActivePosts();
 
+    void updatePost(long id, int leavesQty);
+
     Long createOrder(Order order);
 
     Order getOrderByCommentId(String commentId);
