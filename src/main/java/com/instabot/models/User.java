@@ -1,10 +1,12 @@
 package com.instabot.models;
 
+import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class User {
 
+    private static Logger log = Logger.getLogger(User.class);
     private String id;
     private String userName;
     private String fullName;
@@ -15,25 +17,29 @@ public class User {
     private int followerCount = -1;
     private int followingCount = -1;
 
-    public User(JSONObject obj) throws JSONException {
+    public User(JSONObject obj) {
+        try {
+            setId(obj.getString("id"));
+            setUserName(obj.getString("username"));
+            setFullName(obj.getString("full_name"));
+            setProfilePictureURI(obj.getString("profile_picture"));
 
-        setId(obj.getString("id"));
-        setUserName(obj.getString("username"));
-        setFullName(obj.getString("full_name"));
-        setProfilePictureURI(obj.getString("profile_picture"));
+            setWebsite(obj.optString("website"));
+            setBio(obj.optString("bio"));
 
-        setWebsite(obj.optString("website"));
-        setBio(obj.optString("bio"));
-
-        if (obj.has("counts")) {
-            JSONObject counts = obj.getJSONObject("counts");
-            setFollowerCount(counts.getInt("followed_by"));
-            setFollowingCount(counts.getInt("follows"));
-            setMediaCount(counts.getInt("media"));
-        } else {
-            setFollowerCount(-1);
-            setFollowingCount(-1);
-            setMediaCount(-1);
+            if (obj.has("counts")) {
+                JSONObject counts = obj.getJSONObject("counts");
+                setFollowerCount(counts.getInt("followed_by"));
+                setFollowingCount(counts.getInt("follows"));
+                setMediaCount(counts.getInt("media"));
+            } else {
+                setFollowerCount(-1);
+                setFollowingCount(-1);
+                setMediaCount(-1);
+            }
+        } catch (Exception e) {
+            log.error("Cannot parse JSONObject: " + obj);
+            log.error(e.getMessage());
         }
     }
 

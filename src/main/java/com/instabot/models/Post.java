@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.instabot.utils.Utils;
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,6 +13,8 @@ import org.json.JSONObject;
 import static com.instabot.utils.Constants.*;
 
 public class Post {
+
+    private static Logger log = Logger.getLogger(Post.class);
 
     private long id;
     private String postId;
@@ -31,57 +34,65 @@ public class Post {
     private List<Order> orders;
     private Status status;
 
-    public Post() {}
+    public Post() {
+    }
 
-    public Post(JSONObject obj) throws JSONException {
+    public Post(JSONObject obj) {
 
-        setPostId(obj.getString("id"));
-        setLink(obj.optString("link"));
+        try {
 
-        User user = new User(obj.getJSONObject("user"));
-        setUserId(user.getId());
-        setUserName(user.getUserName());
 
-        setWhenCreated(Utils.timestampToDate(obj.getString("created_time")));
-        setQty(1);
-        setLeavesQty(1);
+            setPostId(obj.getString("id"));
+            setLink(obj.optString("link"));
 
-        if (!obj.isNull("caption")) {
-            JSONObject captionObj = obj.getJSONObject("caption");
-            setCaptionId(captionObj.getString("id"));
-            setCaptionText(captionObj.getString("text"));
-            setCaptionWhenCreated(Utils.timestampToDate(captionObj.getString("created_time")));
+            User user = new User(obj.getJSONObject("user"));
+            setUserId(user.getId());
+            setUserName(user.getUserName());
+
+            setWhenCreated(Utils.timestampToDate(obj.getString("created_time")));
+            setQty(1);
+            setLeavesQty(1);
+
+            if (!obj.isNull("caption")) {
+                JSONObject captionObj = obj.getJSONObject("caption");
+                setCaptionId(captionObj.getString("id"));
+                setCaptionText(captionObj.getString("text"));
+                setCaptionWhenCreated(Utils.timestampToDate(captionObj.getString("created_time")));
+            }
+
+            JSONObject comments = obj.getJSONObject("comments");
+            setCommentCount(comments.getInt("count"));
+
+            JSONArray tagStrings = obj.getJSONArray("tags");
+            ArrayList<String> tags = new ArrayList<>();
+            for (int i = 0; i < tagStrings.length(); i++) {
+                String tagName = tagStrings.getString(i).toLowerCase();
+
+                if (tagName.contains(NAME_TAG)) {
+                    String productName = tagName.replace(NAME_TAG, "").replaceAll("_", " ");
+                    setProductName(productName);
+                }
+
+                if (tagName.contains(PRICE_TAG)) {
+                    String priceStr = tagName.replace(PRICE_TAG, "");
+                    double price = !priceStr.equals("") ? Double.parseDouble(priceStr) : 0;
+                    setPrice(price);
+                }
+
+                if (tagName.contains(QTY_TAG)) {
+                    String qtyStr = tagName.replace(QTY_TAG, "");
+                    int qty = !qtyStr.equals("") ? Integer.parseInt(qtyStr) : 1;
+                    setQty(qty);
+                    setLeavesQty(qty);
+                }
+
+                tags.add(tagName);
+            }
+            setTags(tags);
+        } catch (Exception e) {
+            log.error("Cannot parse JSONObject: " + obj);
+            log.error(e.getMessage());
         }
-
-        JSONObject comments = obj.getJSONObject("comments");
-        setCommentCount(comments.getInt("count"));
-
-        JSONArray tagStrings = obj.getJSONArray("tags");
-        ArrayList<String> tags = new ArrayList<>();
-        for (int i = 0; i < tagStrings.length(); i++) {
-            String tagName = tagStrings.getString(i).toLowerCase();
-
-            if (tagName.contains(NAME_TAG)) {
-                String productName = tagName.replace(NAME_TAG, "").replaceAll("_", " ");
-                setProductName(productName);
-            }
-
-            if (tagName.contains(PRICE_TAG)) {
-                String priceStr = tagName.replace(PRICE_TAG, "");
-                double price = !priceStr.equals("") ? Double.parseDouble(priceStr) : 0;
-                setPrice(price);
-            }
-
-            if (tagName.contains(QTY_TAG)) {
-                String qtyStr = tagName.replace(QTY_TAG, "");
-                int qty = !qtyStr.equals("") ? Integer.parseInt(qtyStr) : 1;
-                setQty(qty);
-                setLeavesQty(qty);
-            }
-
-            tags.add(tagName);
-        }
-        setTags(tags);
     }
 
     public long getId() {

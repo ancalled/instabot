@@ -1,6 +1,7 @@
 package com.instabot.models;
 
 import com.instabot.utils.Utils;
+import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -10,6 +11,8 @@ import static com.instabot.utils.Constants.AUTH_CODE_TAG;
 import static com.instabot.utils.Constants.BUY_TAG;
 
 public class Order {
+
+    private static Logger log = Logger.getLogger(Order.class);
 
     private long id;
     private String commentId;
@@ -27,26 +30,31 @@ public class Order {
     public Order() {
     }
 
-    public Order(JSONObject obj, String postId) throws JSONException {
-        setCommentId(obj.getString("id"));
-        setText(obj.getString("text"));
+    public Order(JSONObject obj, String postId) {
+        try {
+            setCommentId(obj.getString("id"));
+            setText(obj.getString("text"));
 
-        User user = new User(obj.getJSONObject("from"));
-        setUserId(user.getId());
-        setUserName(user.getUserName());
+            User user = new User(obj.getJSONObject("from"));
+            setUserId(user.getId());
+            setUserName(user.getUserName());
 
-        setWhenCreated(Utils.timestampToDate(obj.getString("created_time")));
-        setPostId(postId);
+            setWhenCreated(Utils.timestampToDate(obj.getString("created_time")));
+            setPostId(postId);
 
-        if (getText().contains(BUY_TAG)) {
-            String qtyStr = getText().replace(BUY_TAG, "");
-            int qty = !qtyStr.equals("") ? Integer.parseInt(qtyStr) : 1;
-            setQty(qty);
-        }
+            if (getText().contains(BUY_TAG)) {
+                String qtyStr = getText().replace(BUY_TAG, "");
+                int qty = !qtyStr.equals("") ? Integer.parseInt(qtyStr) : 1;
+                setQty(qty);
+            }
 
-        if (getText().contains(AUTH_CODE_TAG)) {
-            String authCode = getText().replace(AUTH_CODE_TAG, "");
-            setAuthCode(authCode);
+            if (getText().contains(AUTH_CODE_TAG)) {
+                String authCode = getText().replace(AUTH_CODE_TAG, "");
+                setAuthCode(authCode);
+            }
+        } catch (Exception e) {
+            log.error("Cannot parse JSONObject: " + obj);
+            log.error(e.getMessage());
         }
     }
 

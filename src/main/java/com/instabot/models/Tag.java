@@ -1,16 +1,23 @@
 package com.instabot.models;
 
+import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Tag {
 
+    private static Logger log = Logger.getLogger(Tag.class);
     int mediaCount;
     String name;
 
-    public Tag(JSONObject obj) throws JSONException {
-        setName(obj.getString("name"));
-        setMediaCount(obj.getInt("media_count"));
+    public Tag(JSONObject obj) {
+        try {
+            setName(obj.getString("name"));
+            setMediaCount(obj.getInt("media_count"));
+        } catch (Exception e) {
+            log.error("Cannot parse JSONObject: " + obj);
+            log.error(e.getMessage());
+        }
     }
 
     protected void setMediaCount(int mediaCount) {
