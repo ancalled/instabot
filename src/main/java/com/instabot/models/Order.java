@@ -45,7 +45,7 @@ public class Order {
             if (getText().contains(BUY_TAG)) {
                 for (String word : getText().split(" ")) {
                     if (word.contains(BUY_TAG)) {
-                        String qtyStr = getText().replace(BUY_TAG, "");
+                        String qtyStr = word.replace(BUY_TAG, "");
                         int qty = !qtyStr.equals("") ? Integer.parseInt(qtyStr) : 1;
                         setQty(qty);
                         break;
@@ -56,7 +56,7 @@ public class Order {
             if (getText().contains(AUTH_CODE_TAG)) {
                 for (String word : getText().split(" ")) {
                     if (word.contains(AUTH_CODE_TAG)) {
-                        String authCode = getText().replace(AUTH_CODE_TAG, "");
+                        String authCode = word.replace(AUTH_CODE_TAG, "");
                         setAuthCode(authCode);
                         break;
                     }
