@@ -75,7 +75,7 @@ public class DbServiceImpl implements DbService {
     @Override
     public void updatePost(long id, int leavesQty) {
         Post.Status status = leavesQty > 0 ? Post.Status.ACTIVE : Post.Status.ARCHIVE;
-        db.update("UPDATE POSTS SET LEAVES_QTY=?, STATUS=? WHERE ID=?", leavesQty, status, id);
+        db.update("UPDATE POSTS SET LEAVES_QTY=?, STATUS=? WHERE ID=?", leavesQty, status.ordinal(), id);
     }
 
     @Override

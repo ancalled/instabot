@@ -43,14 +43,24 @@ public class Order {
             setPostId(postId);
 
             if (getText().contains(BUY_TAG)) {
-                String qtyStr = getText().replace(BUY_TAG, "");
-                int qty = !qtyStr.equals("") ? Integer.parseInt(qtyStr) : 1;
-                setQty(qty);
+                for (String word : getText().split(" ")) {
+                    if (word.contains(BUY_TAG)) {
+                        String qtyStr = getText().replace(BUY_TAG, "");
+                        int qty = !qtyStr.equals("") ? Integer.parseInt(qtyStr) : 1;
+                        setQty(qty);
+                        break;
+                    }
+                }
             }
 
             if (getText().contains(AUTH_CODE_TAG)) {
-                String authCode = getText().replace(AUTH_CODE_TAG, "");
-                setAuthCode(authCode);
+                for (String word : getText().split(" ")) {
+                    if (word.contains(AUTH_CODE_TAG)) {
+                        String authCode = getText().replace(AUTH_CODE_TAG, "");
+                        setAuthCode(authCode);
+                        break;
+                    }
+                }
             }
         } catch (Exception e) {
             log.error("Cannot parse JSONObject: " + obj);
