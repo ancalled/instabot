@@ -36,7 +36,7 @@ public class MediaTask implements Runnable {
 
     private void scanMediaToSell() {
         List<Post> posts = instaService.getRecentTaggedMedia(SELL_TAG);
-        log.info("Got" + posts.size() + " medias...");
+        log.info("Got " + posts.size() + " medias...");
         for (Post p : posts) {
             Post oldPost = dbService.getPost(p.getPostId());
             if (oldPost == null) {

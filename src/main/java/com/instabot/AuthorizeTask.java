@@ -41,7 +41,7 @@ public class AuthorizeTask implements Runnable {
         List<Post> activePosts = dbService.getActivePosts();
         for (Post p : activePosts) {
             List<Order> orders = instaService.getOrdersByMediaId(p.getPostId(), CommentType.AUTHORIZATION);
-            log.info("Got" + orders.size() + " orders to authorize for post " + p.getPostId());
+            log.info("Got " + orders.size() + " orders to authorize for post " + p.getPostId());
             for (Order order : orders) {
                 List<Order> userOrders = dbService.getOrdersByPostIdUserStatus(p.getPostId(), order.getUserName(), PaymentStatus.CREATED);
                 for (Order userOrder : userOrders) {
