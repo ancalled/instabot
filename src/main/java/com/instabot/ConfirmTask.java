@@ -25,9 +25,9 @@ public class ConfirmTask implements Runnable {
     @Override
     public void run() {
         try {
-            log.info("Starting scan authorize orders");
+            log.info("Starting scan confirm orders");
             scanConfirmComments();
-            log.info("Finished scaning authorize orders");
+            log.info("Finished scaning confirm orders");
             Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
