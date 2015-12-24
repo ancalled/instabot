@@ -20,13 +20,13 @@ public class ViaphoneService {
         String details = "product=" + post.getProductName() + "_price=" + post.getPrice() + "_qty=" + order.getQty();
 
         HashMap<String, Object> params = new HashMap<>();
-        params.put("customer", order.getUserName());
+        params.put("customer", order.getUserId());
         params.put("merchant", post.getUserName());
         params.put("amount", amount);
         params.put("details", details);
         params.put("instagram", true);
 
-        log.info("Sending CREATE_PAYMENT request: \n\tcustomer:" + order.getUserName()
+        log.info("Sending CREATE_PAYMENT request: \n\tcustomer:" + order.getUserId()
                 + "\n\tmerchant:" + post.getUserName() + "\n\tamount:" + amount + "\n\tdetails:" + details);
         JSONObject object = makeRequestJson(Constants.Viaphone.CREATE_PAYMENT, params);
         log.info("Result: " + object);
