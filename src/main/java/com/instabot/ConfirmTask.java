@@ -39,7 +39,6 @@ public class ConfirmTask implements Runnable {
         List<Post> activePosts = dbService.getActivePosts();
         for (Post p : activePosts) {
             List<Order> orders = instaService.getOrdersByMediaId(p.getPostId(), CommentType.CONFIRM);
-            log.info("Got " + orders.size() + " orders to confirm for post " + p.getPostId());
             for (Order order : orders) {
                 List<Order> userOrders = dbService.getOrdersByPostIdUserStatus(p.getPostId(), order.getUserName(), PaymentStatus.AUTHORIZED);
                 for (Order userOrder : userOrders) {

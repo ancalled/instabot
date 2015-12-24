@@ -42,7 +42,6 @@ public class OrdersTask implements Runnable {
         activePosts.stream().filter(p -> p.getLeavesQty() > 0).forEach(p -> {
 
             List<Order> orders = instaService.getOrdersByMediaId(p.getPostId(), CommentType.ORDER);
-            log.info("Got " + orders.size() + " orders for post " + p.getPostId());
             orders.stream().filter(order -> order.getUserName() != null).forEach(order -> {
                 Order oldOrder = dbService.getOrderByCommentId(order.getCommentId());
                 if (oldOrder == null) {
