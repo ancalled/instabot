@@ -1,10 +1,14 @@
 package com.instabot.models;
 
+import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Response {
 
+    private static Logger log = Logger.getLogger(Response.class);
+
+    private long ref;
     private long paymentId;
     private String customer;
     private String merchant;
@@ -12,20 +16,30 @@ public class Response {
     private double discountPrice;
     private Status status;
 
-    public Response(JSONObject obj) throws JSONException {
-        setPaymentId(obj.getLong("paymentId"));
-        if (!obj.isNull("customer")) {
-            setCustomer(obj.getString("customer"));
-        }
+    public Response(JSONObject obj, long ref) {
+        try {
+            if (ref != obj.getLong("ref")) {
+                log.error("Current ref" + ref + " doesn't match for response" + obj.toString());
+                return;
+            }
 
-        if (!obj.isNull("merchant")) {
-            setMerchant(obj.getString("merchant"));
-        }
+            setPaymentId(obj.getLong("paymentId"));
+            if (!obj.isNull("customer")) {
+                setCustomer(obj.getString("customer"));
+            }
 
-        setDiscountPrice(obj.getDouble("discountPrice"));
-        setStatus(Status.valueOf(obj.getString("status")));
-        if (!obj.isNull("paymentStatus")) {
-            setPaymentStatus(PaymentStatus.valueOf(obj.getString("paymentStatus")));
+            if (!obj.isNull("merchant")) {
+                setMerchant(obj.getString("merchant"));
+            }
+
+            setDiscountPrice(obj.getDouble("discountPrice"));
+            setStatus(Status.valueOf(obj.getString("status")));
+            if (!obj.isNull("paymentStatus")) {
+                setPaymentStatus(PaymentStatus.valueOf(obj.getString("paymentStatus")));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
         }
     }
 
@@ -75,6 +89,14 @@ public class Response {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public long getRef() {
+        return ref;
+    }
+
+    public void setRef(long ref) {
+        this.ref = ref;
     }
 
     public static enum Status {

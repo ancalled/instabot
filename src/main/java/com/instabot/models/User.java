@@ -75,15 +75,15 @@ public class User {
         this.profilePictureURI = profilePictureURI;
     }
 
-    public String getBio() throws Exception {
+    public String getBio() {
         return bio;
     }
 
-    private void setBio(String bio) throws JSONException {
+    private void setBio(String bio) {
         this.bio = bio;
     }
 
-    public String getWebsite() throws Exception {
+    public String getWebsite() {
         return website;
     }
 
@@ -91,7 +91,7 @@ public class User {
         this.website = website;
     }
 
-    public int getMediaCount() throws Exception {
+    public int getMediaCount() {
         return mediaCount;
     }
 
@@ -99,7 +99,7 @@ public class User {
         this.mediaCount = mediaCount;
     }
 
-    public int getFollowerCount() throws Exception {
+    public int getFollowerCount() {
         return followerCount;
     }
 
@@ -107,7 +107,7 @@ public class User {
         this.followerCount = followerCount;
     }
 
-    public int getFollowingCount() throws Exception {
+    public int getFollowingCount() {
         return followingCount;
     }
 
