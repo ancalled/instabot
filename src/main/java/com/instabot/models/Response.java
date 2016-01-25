@@ -10,11 +10,10 @@ public class Response {
 
     private long ref;
     private long paymentId;
-    private String customer;
-    private String merchant;
     private PaymentStatus paymentStatus;
     private double discountPrice;
     private Status status;
+    private String confirmType;
 
     public Response(JSONObject obj, long ref) {
         try {
@@ -23,20 +22,24 @@ public class Response {
                 return;
             }
 
-            setPaymentId(obj.getLong("paymentId"));
-            if (!obj.isNull("customer")) {
-                setCustomer(obj.getString("customer"));
+            if (!obj.isNull("paymentId")) {
+                setPaymentId(obj.getLong("paymentId"));
             }
 
-            if (!obj.isNull("merchant")) {
-                setMerchant(obj.getString("merchant"));
-            }
-
-            setDiscountPrice(obj.getDouble("discountPrice"));
-            setStatus(Status.valueOf(obj.getString("status")));
             if (!obj.isNull("paymentStatus")) {
                 setPaymentStatus(PaymentStatus.valueOf(obj.getString("paymentStatus")));
             }
+
+            if (!obj.isNull("discountPrice")) {
+                setDiscountPrice(obj.getDouble("discountPrice"));
+            }
+
+            setStatus(Status.valueOf(obj.getString("status")));
+
+            if (!obj.isNull("confirmType")) {
+                setConfirmType(obj.getString("confirmType"));
+            }
+
         } catch (JSONException e) {
             e.printStackTrace();
             log.error(e.getMessage());
@@ -49,22 +52,6 @@ public class Response {
 
     public void setPaymentId(long paymentId) {
         this.paymentId = paymentId;
-    }
-
-    public String getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(String customer) {
-        this.customer = customer;
-    }
-
-    public String getMerchant() {
-        return merchant;
-    }
-
-    public void setMerchant(String merchant) {
-        this.merchant = merchant;
     }
 
     public PaymentStatus getPaymentStatus() {
@@ -99,6 +86,14 @@ public class Response {
         this.ref = ref;
     }
 
+    public String getConfirmType() {
+        return confirmType;
+    }
+
+    public void setConfirmType(String confirmType) {
+        this.confirmType = confirmType;
+    }
+
     public static enum Status {
         ERROR(1, "Неизветсная ошибка"),
         OK(0, "Ok"),
@@ -124,7 +119,7 @@ public class Response {
 
     @Override
     public String toString() {
-        return "paymentId: " + paymentId + " customer: " + customer + " merchant: " + merchant
-                + " paymentStatus:" + paymentStatus + " discountPrice: " + discountPrice + " status: " + status;
+        return "ref: " + ref + " paymentId:" + paymentId + " paymentStatus: " + paymentStatus
+                + " discountPrice: " + discountPrice + " status: " + status + " confirmType: " + confirmType;
     }
 }

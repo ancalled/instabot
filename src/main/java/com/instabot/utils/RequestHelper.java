@@ -1,13 +1,16 @@
 package com.instabot.utils;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -94,25 +97,40 @@ public class RequestHelper {
     }
 
     public static JSONObject makeRequestJson(String url) {
+        return toJson(makeRequest(url));
+    }
+
+    public static JSONObject makeRequestJson(String url, Map<String, Object> params) {
+        return toJson(makePostRequest(url, params));
+    }
+
+    public static JSONObject makeRequestJson(String url, String content) {
+        String result = null;
+        try {
+            HttpClient client = HttpClientBuilder.create().build();
+            HttpPost post = new HttpPost(url);
+            post.setHeader("Content-Type", "application/json");
+            post.setHeader("Authorization", "Bearer 8fadc6ec-ce6f-4d9b-9731-d1f4420c04b1");
+            HttpEntity entity = new ByteArrayEntity(content.getBytes("UTF-8"));
+            post.setEntity(entity);
+            HttpResponse response = client.execute(post);
+            result = EntityUtils.toString(response.getEntity());
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+        }
+        return toJson(result);
+    }
+
+    private static JSONObject toJson(String jsonString) {
         JSONObject res = null;
         try {
-            String jsonString = makeRequest(url);
             if (jsonString != null) {
                 res = new JSONObject(new JSONTokener(jsonString));
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            log.error(e.getMessage());
-        }
-        return res;
-    }
-
-    public static JSONObject makeRequestJson(String url, Map<String, Object> params) {
-        JSONObject res = null;
-        try {
-            res = new JSONObject(new JSONTokener(makePostRequest(url, params)));
-        } catch (JSONException e) {
-            e.printStackTrace();
+            log.error(jsonString);
             log.error(e.getMessage());
         }
         return res;

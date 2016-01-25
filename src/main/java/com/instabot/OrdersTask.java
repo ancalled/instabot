@@ -49,7 +49,6 @@ public class OrdersTask implements Runnable {
                         Response response = viaphoneService.createPayment(p, order);
                         if (response.getStatus().equals(Response.Status.OK)) {
                             order.setPaymentId(response.getPaymentId());
-                            order.setDiscountPrice(response.getDiscountPrice());
                             order.setStatus(response.getPaymentStatus());
 
                             log.info("Found new order: " + order.toString());
@@ -57,7 +56,9 @@ public class OrdersTask implements Runnable {
                             Long id = dbService.createOrder(order);
                             if (id != null) {
                                 log.info("Order with id: " + id + " inserted successfully to db!");
-                                instaService.postComment(p.getPostId(), String.format(MSG_ORDER_CREATED, order.getUserName()));
+                                if (response.getConfirmType().equals("SMS")) {
+                                    instaService.postComment(p.getPostId(), String.format(MSG_ORDER_CREATED, order.getUserName()));
+                                }
                             }
                         } else if (response.getStatus().equals(Response.Status.CUSTOMER_NOT_FOUND)) {
                             instaService.postComment(p.getPostId(), String.format(MSG_NOT_REGISTERED, order.getUserName()));
@@ -65,7 +66,6 @@ public class OrdersTask implements Runnable {
                     } else {
                         instaService.postComment(p.getPostId(), String.format(MSG_NOT_ENOUGH, order.getUserName(), p.getLeavesQty()));
                     }
-
                 }
             });
         });

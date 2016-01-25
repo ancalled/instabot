@@ -42,7 +42,7 @@ public class ConfirmTask implements Runnable {
             for (Order order : orders) {
                 List<Order> userOrders = dbService.getOrdersByPostIdUserStatus(p.getPostId(), order.getUserName(), PaymentStatus.AUTHORIZED);
                 for (Order userOrder : userOrders) {
-                    Response response = viaphoneService.confirmPayment(userOrder.getPaymentId(), p.getUserName());
+                    Response response = viaphoneService.confirmPayment(userOrder.getPaymentId(), p.getUserId());
                     if (response.getStatus().equals(Response.Status.OK)) {
                         dbService.updateOrderStatus(userOrder.getId(), response.getPaymentStatus());
                         int leavesQty = p.getLeavesQty() - userOrder.getQty();
