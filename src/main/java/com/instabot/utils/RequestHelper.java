@@ -104,13 +104,13 @@ public class RequestHelper {
         return toJson(makePostRequest(url, params));
     }
 
-    public static JSONObject makeRequestJson(String url, String content) {
+    public static JSONObject makeRequestJson(String url, String accessToken, String content) {
         String result = null;
         try {
             HttpClient client = HttpClientBuilder.create().build();
             HttpPost post = new HttpPost(url);
             post.setHeader("Content-Type", "application/json");
-            post.setHeader("Authorization", "Bearer 8fadc6ec-ce6f-4d9b-9731-d1f4420c04b1");
+            post.setHeader("Authorization", "Bearer " + accessToken);
             HttpEntity entity = new ByteArrayEntity(content.getBytes("UTF-8"));
             post.setEntity(entity);
             HttpResponse response = client.execute(post);

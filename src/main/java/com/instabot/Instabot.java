@@ -65,6 +65,6 @@ public class Instabot {
     public Instabot(Properties prop) {
         dbService = new DbServiceImpl(prop);
         instaService = new InstaService();
-        viaphoneService = new ViaphoneService();
+        viaphoneService = new ViaphoneService(prop.getProperty("vp.client.id"), prop.getProperty("vp.client.secret"));
     }
 }

@@ -55,7 +55,11 @@ public class Constants {
 
     public static class Viaphone {
 
-        public static String API_ROOT = "http://ikashkynbek.com/api/merchant";
+        public static String HOST = "http://ikashkynbek.com";
+
+        public static String ACCESS_TOKEN = HOST + "/oauth/token";
+
+        public static String API_ROOT = HOST + "/api/merchant";
         public static final String CREATE_PAYMENT = API_ROOT + "/create-payment";
         public static final String AUTHORIZE_PAYMENT = API_ROOT + "/authorize-payment";
         public static final String LOOKUP_PAYMENT = API_ROOT + "/lookup-payment";

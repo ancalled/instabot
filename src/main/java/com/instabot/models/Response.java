@@ -15,12 +15,12 @@ public class Response {
     private Status status;
     private String confirmType;
 
-    public Response(JSONObject obj, long ref) {
+    public Response(JSONObject obj) {
         try {
-            if (ref != obj.getLong("ref")) {
-                log.error("Current ref" + ref + " doesn't match for response" + obj.toString());
-                return;
-            }
+//            if (ref != obj.getLong("ref")) {
+//                log.error("Current ref" + ref + " doesn't match for response" + obj.toString());
+//                return;
+//            }
 
             if (!obj.isNull("paymentId")) {
                 setPaymentId(obj.getLong("paymentId"));

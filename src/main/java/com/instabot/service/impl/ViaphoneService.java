@@ -15,6 +15,16 @@ public class ViaphoneService {
 
     private static Logger log = Logger.getLogger(ViaphoneService.class);
 
+    private String clientId;
+    private String clientSecret;
+    private String accessToken;
+
+    public ViaphoneService(String clientId, String clientSecret) {
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
+        getAccessToken();
+    }
+
     public Response createPayment(Post post, Order order) {
         double amount = post.getPrice() * order.getQty();
         long ref = Utils.nextRef();
@@ -34,9 +44,7 @@ public class ViaphoneService {
         req.put("details", details);
 
         log.info("Sending CREATE_PAYMENT request: \n\t" + req.toString());
-        JSONObject object = makeRequestJson(Constants.Viaphone.CREATE_PAYMENT, req.toString());
-        log.info("Result: " + object);
-        return new Response(object, ref);
+        return sendRequest(Constants.Viaphone.CREATE_PAYMENT, req);
     }
 
     public Response authorizePayment(String code, long paymentId) {
@@ -48,9 +56,7 @@ public class ViaphoneService {
         req.put("paymentId", paymentId);
 
         log.info("Sending AUTHORIZE_PAYMENT request: \n\t" + req.toString());
-        JSONObject object = makeRequestJson(Constants.Viaphone.AUTHORIZE_PAYMENT, req.toString());
-        log.info("Result: " + object);
-        return new Response(object, ref);
+        return sendRequest(Constants.Viaphone.AUTHORIZE_PAYMENT, req);
     }
 
     public Response lookupPayment(long paymentId, String merchant) {
@@ -62,9 +68,7 @@ public class ViaphoneService {
         req.put("calcDiscount", true);
 
         log.info("Sending LOOKUP_PAYMENT request: \n\t" + req.toString());
-        JSONObject object = makeRequestJson(Constants.Viaphone.LOOKUP_PAYMENT, req.toString());
-        log.info("Result: " + object);
-        return new Response(object, ref);
+        return sendRequest(Constants.Viaphone.LOOKUP_PAYMENT, req);
     }
 
     public Response confirmPayment(long paymentId, String merchant) {
@@ -73,10 +77,26 @@ public class ViaphoneService {
         req.put("ref", ref);
         req.put("paymentId", paymentId);
         req.put("merchant", merchant);
-
         log.info("Sending CONFIRM_PAYMENT request: \n\t" + req.toString());
-        JSONObject object = makeRequestJson(Constants.Viaphone.CONFIRM_PAYMENT, req.toString());
-        log.info("Result: " + object);
-        return new Response(object, ref);
+        return sendRequest(Constants.Viaphone.CONFIRM_PAYMENT, req);
+    }
+
+    private Response sendRequest(String url, JSONObject content) {
+        JSONObject obj = makeRequestJson(url, accessToken, content.toString());
+        if (!obj.isNull("error") && obj.getString("error").equals("invalid_token")) {
+            getAccessToken();
+            obj = makeRequestJson(url, accessToken, content.toString());
+        }
+        log.info("Result: " + obj);
+        return new Response(obj);
+    }
+
+    private void getAccessToken() {
+        String url = Constants.Viaphone.ACCESS_TOKEN + "?grant_type=password&client_id=" + clientId
+                + "&client_secret=" + clientSecret;
+        JSONObject obj = makeRequestJson(url);
+        if (!obj.isNull("access_token")) {
+            accessToken = obj.getString("access_token");
+        }
     }
 }
